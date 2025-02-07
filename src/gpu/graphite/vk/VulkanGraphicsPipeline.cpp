@@ -579,13 +579,13 @@ static VkPipelineLayout setup_pipeline_layout(const VulkanSharedContext* sharedC
                                               bool hasGradientBuffer,
                                               int numTextureSamplers,
                                               bool loadMsaaFromResolve,
-                                              SkSpan<sk_sp<VulkanSampler>> immutableSamplers) {
+                                              SkSpan<sk_sp<VulkanSampler>> immutableSamplers,
+                                              VulkanGraphicsPipeline::DescriptorSetLayouts& setLayouts ) {
     // Create a container with the max anticipated amount (kMaxNumDescSets) of VkDescriptorSetLayout
     // handles which will be used to create the pipeline layout.
-    skia_private::STArray<
-            VulkanGraphicsPipeline::kMaxNumDescSets, VkDescriptorSetLayout> setLayouts;
-    setLayouts.push_back_n(VulkanGraphicsPipeline::kMaxNumDescSets, VkDescriptorSetLayout());
-
+    if( setLayouts.empty() ) {
+        setLayouts.push_back_n(VulkanGraphicsPipeline::kMaxNumDescSets, VkDescriptorSetLayout());
+    }
     // Populate the container with actual descriptor set layout handles. Each index should contain
     // either a valid/real or a mock/placehodler layout handle. Mock VkDescriptorSetLayouts do not
     // actually contain any descriptors, but are needed as placeholders to maintain expected
@@ -640,7 +640,7 @@ static VkPipelineLayout setup_pipeline_layout(const VulkanSharedContext* sharedC
                                             &layout));
 
     // DescriptorSetLayouts can be deleted after the pipeline layout is created.
-    destroy_desc_set_layouts(sharedContext, setLayouts);
+    // postpone deleting DescriptorSetLayouts to caller site.
 
     return result == VK_SUCCESS ? layout : VK_NULL_HANDLE;
 }
@@ -831,6 +831,7 @@ VulkanProgramInfo::~VulkanProgramInfo() {
                                           nullptr));
         fLayout = VK_NULL_HANDLE;
     }
+    destroy_desc_set_layouts(fSharedContext, fDescSetLayouts);
 }
 
 sk_sp<VulkanGraphicsPipeline> VulkanGraphicsPipeline::Make(
@@ -956,7 +957,8 @@ sk_sp<VulkanGraphicsPipeline> VulkanGraphicsPipeline::Make(
                 shaderInfo->hasGradientBuffer(),
                 shaderInfo->numFragmentTexturesAndSamplers(),
                 /*loadMsaaFromResolve=*/false,
-                SkSpan<sk_sp<VulkanSampler>>(immutableSamplers)))) {
+                SkSpan<sk_sp<VulkanSampler>>(immutableSamplers),
+                program->setLayouts()))) {
         return nullptr;
     }
 
@@ -999,6 +1001,7 @@ sk_sp<VulkanGraphicsPipeline> VulkanGraphicsPipeline::Make(
                                            vkPipeline,
                                            shadersPipeline,
                                            /*ownsPipelineLayout=*/true,
+                                           program->releaseSetLayouts(),
                                            std::move(immutableSamplers),
                                            step->renderStepID(),
                                            step->primitiveType(),
@@ -1226,7 +1229,8 @@ std::unique_ptr<VulkanProgramInfo> VulkanGraphicsPipeline::CreateLoadMSAAProgram
                 /*hasGradientBuffer=*/false,
                 /*numTextureSamplers=*/0,
                 /*loadMsaaFromResolve=*/true,
-                /*immutableSamplers=*/{}))) {
+                /*immutableSamplers=*/{},
+                /*descriptorSetLayouts*/fDescSetLayouts))) {
         return nullptr;
     }
 
@@ -1274,6 +1278,7 @@ sk_sp<VulkanGraphicsPipeline> VulkanGraphicsPipeline::MakeLoadMSAAPipeline(
                                        vkPipeline,
                                        /*shadersPipeline=*/VK_NULL_HANDLE,
                                        /*ownsPipelineLayout=*/false,
+                                       /*descriptorSetLayouts*/loadMSAAProgram.setLayouts(),
                                        /*immutableSamplers=*/{},
                                        RenderStep::RenderStepID::kInvalid,
                                        PrimitiveType::kTriangleStrip,
@@ -1290,17 +1295,19 @@ VulkanGraphicsPipeline::VulkanGraphicsPipeline(
         VkPipeline pipeline,
         VkPipeline shadersPipeline,
         bool ownsPipelineLayout,
+        DescriptorSetLayouts descSetLayouts,
         skia_private::TArray<sk_sp<VulkanSampler>>&& immutableSamplers,
         RenderStep::RenderStepID renderStepID,
         PrimitiveType primitiveType,
         const DepthStencilSettings& depthStencilSettings,
         VertexInputBindingDescriptions&& vertexBindingDescriptions,
-        VertexInputAttributeDescriptions&& vertexAttributeDescriptions)
+        VertexInputAttributeDescriptions&& vertexAttributeDescriptions )
     : GraphicsPipeline(sharedContext, pipelineInfo, pipelineLabel)
     , fPipelineLayout(pipelineLayout)
     , fPipeline(pipeline)
     , fShadersPipeline(shadersPipeline)
     , fOwnsPipelineLayout(ownsPipelineLayout)
+    , fDescSetLayouts(descSetLayouts)
     , fImmutableSamplers(std::move(immutableSamplers))
     , fPrimitiveType(primitiveType)
     , fDepthStencilSettings(depthStencilSettings)
@@ -1310,6 +1317,10 @@ VulkanGraphicsPipeline::VulkanGraphicsPipeline(
 
 void VulkanGraphicsPipeline::freeGpuData() {
     auto sharedCtxt = static_cast<const VulkanSharedContext*>(this->sharedContext());
+
+    if(fOwnsPipelineLayout) {
+        destroy_desc_set_layouts(sharedCtxt, fDescSetLayouts);
+    }
     if (fShadersPipeline != VK_NULL_HANDLE) {
         VULKAN_CALL(sharedCtxt->interface(),
                     DestroyPipeline(sharedCtxt->device(), fShadersPipeline, nullptr));

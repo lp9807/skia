@@ -10,6 +10,7 @@
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkSurfaceProps.h"
 #include "tools/window/DisplayParams.h"
+#include "tools/sk_app/ohos/logger_common.h"
 
 #if defined(SK_GANESH)
 #include "include/gpu/ganesh/GrTypes.h"
@@ -56,7 +57,16 @@ public:
 #endif
 #if defined(SK_GRAPHITE)
     skgpu::graphite::Context* graphiteContext() const { return fGraphiteContext.get(); }
-    skgpu::graphite::Recorder* graphiteRecorder() const { return fGraphiteRecorder.get(); }
+    skgpu::graphite::Recorder* graphiteRecorder() const { 
+        if (!fGraphiteRecorder) {
+            return nullptr;
+        } else {
+            return fGraphiteRecorder.get();
+        } 
+    }
+    // std::unique_ptr<skgpu::graphite::Recorder> clone() const { // Don't know if that makes a difference
+    //     return std::make_unique<DisplayParams>(fGraphiteRecorder.get());
+    // }
 #endif
 
     using GpuTimerCallback = std::function<void(uint64_t ns)>;

@@ -38,6 +38,10 @@ class VulkanRenderPass;
 // VulkanProgramInfo owns the underlying vulkan objects and are deleted automatically.
 class VulkanProgramInfo {
 public:
+    inline static constexpr unsigned int kMaxNumDescSets = 4;
+    using DescriptorSetLayouts =
+            skia_private::STArray<VulkanGraphicsPipeline::kMaxNumDescSets, VkDescriptorSetLayout>;
+
     ~VulkanProgramInfo();
 
     static std::unique_ptr<VulkanProgramInfo> Make(const VulkanSharedContext* sharedContext) {
@@ -48,12 +52,19 @@ public:
     VkShaderModule vs() const { return fVS; }
     VkShaderModule fs() const { return fFS; }
     VkPipelineLayout layout() const { return fLayout; }
+    const DescriptorSetLayouts& setLayouts() const { return fDescSetLayouts; }
 
     // Relinquishes ownership of the VkPipelineLayout and no longer holds a pointer to it.
     VkPipelineLayout releaseLayout() {
         VkPipelineLayout layout = fLayout;
         fLayout = VK_NULL_HANDLE;
         return layout;
+    }
+
+    DescriptorSetLayouts releaseSetLayouts() {
+        auto setLayouts = fDescSetLayouts;
+        fDescSetLayouts.clear();
+        return setLayouts; 
     }
 
     // The modules and layout can be set at most once
@@ -83,6 +94,7 @@ private:
     VkShaderModule fVS = VK_NULL_HANDLE;
     VkShaderModule fFS = VK_NULL_HANDLE;
     VkPipelineLayout fLayout = VK_NULL_HANDLE;
+    DescriptorSetLayouts fDescSetLayouts;
 };
 
 class VulkanGraphicsPipeline final : public GraphicsPipeline {
@@ -102,6 +114,9 @@ public:
     inline static constexpr unsigned int kStaticDataBufferIndex = 0;
     inline static constexpr unsigned int kAppendDataBufferIndex = 1;
     inline static constexpr unsigned int kNumInputBuffers = 2;
+
+    using DescriptorSetLayouts =
+            skia_private::STArray<VulkanGraphicsPipeline::kMaxNumDescSets, VkDescriptorSetLayout>;
 
     // Define a static DescriptorData to represent input attachments which have the same values
     // across all pipelines (we currently only ever use one input attachment within a set).
@@ -163,6 +178,7 @@ private:
                            VkPipeline,
                            VkPipeline,
                            bool ownsPipelineLayout,
+                           DescriptorSetLayouts descSetLayouts,
                            skia_private::TArray<sk_sp<VulkanSampler>>&& immutableSamplers,
                            RenderStep::RenderStepID renderStepID,
                            PrimitiveType primitiveType,
@@ -193,6 +209,7 @@ private:
     VkPipeline fShadersPipeline = VK_NULL_HANDLE;
     bool fOwnsPipelineLayout = true;
 
+    DescriptorSetLayouts fDescSetLayouts;
     // Hold a ref to immutable samplers used such that their lifetime is properly managed.
     const skia_private::TArray<sk_sp<VulkanSampler>> fImmutableSamplers;
 
