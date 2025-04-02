@@ -63,6 +63,7 @@ fi
 third_party_dng_sdk_path=$skia_path/third_party/externals/dng_sdk
 third_party_zlib_path=$skia_path/third_party/externals/zlib
 third_party_microhttpd_path=$skia_path/third_party/externals/microhttpd/src/include
+third_party_vulkan_path=$skia_path/third_party/externals/vulkan/include
 
 # if [ -d "$third_party_microhttpd_path" ]; then
 #     third_party_microhttpd_path=$third_party_microhttpd_path/microhttpd.h
@@ -87,6 +88,19 @@ if [ -d "$third_party_zlib_path" ]; then
     cp modified_external_third_party/cpu_features.c $zlib_cpu_features_path
 else
     echo "Cannot find $third_party_zlib_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
+    exit 1
+fi
+
+if [ -d "$third_party_vulkan_path" ]; then
+    vulkan_core_path=$third_party_vulkan_path/vulkan_core.h
+    vulkan_ohos_path=$third_party_vulkan_path/vulkan_ohos.h
+    vulkan_path=$third_party_vulkan_path/vulkan.h
+
+    cp modified_external_third_party/vulkan_core.h $vulkan_core_path
+    cp modified_external_third_party/vulkan_ohos.h $vulkan_ohos_path
+    cp modified_external_third_party/vulkan.h $vulkan_path
+else
+    echo "Cannot $third_party_vulkan_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
     exit 1
 fi
 
