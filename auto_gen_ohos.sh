@@ -63,7 +63,7 @@ fi
 third_party_dng_sdk_path=$skia_path/third_party/externals/dng_sdk
 third_party_zlib_path=$skia_path/third_party/externals/zlib
 third_party_microhttpd_path=$skia_path/third_party/externals/microhttpd/src/include
-third_party_vulkan_path=$skia_path/third_party/externals/vulkan/include
+third_party_vulkan_path=$skia_path/third_party/externals/vulkan-headers/include
 
 # if [ -d "$third_party_microhttpd_path" ]; then
 #     third_party_microhttpd_path=$third_party_microhttpd_path/microhttpd.h
