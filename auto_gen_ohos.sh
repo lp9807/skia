@@ -63,7 +63,8 @@ fi
 third_party_dng_sdk_path=$skia_path/third_party/externals/dng_sdk
 third_party_zlib_path=$skia_path/third_party/externals/zlib
 third_party_microhttpd_path=$skia_path/third_party/externals/microhttpd/src/include
-third_party_vulkan_path=$skia_path/third_party/externals/vulkan-headers/include
+third_party_dawn_path=$skia_path/third_party/externals/dawn/src/dawn
+third_party_vulkan_path=$skia_path/third_party/externals/vulkan-headers/include/vulkan
 
 # if [ -d "$third_party_microhttpd_path" ]; then
 #     third_party_microhttpd_path=$third_party_microhttpd_path/microhttpd.h
@@ -92,15 +93,21 @@ else
 fi
 
 if [ -d "$third_party_vulkan_path" ]; then
-    vulkan_core_path=$third_party_vulkan_path/vulkan_core.h
-    vulkan_ohos_path=$third_party_vulkan_path/vulkan_ohos.h
-    vulkan_path=$third_party_vulkan_path/vulkan.h
 
-    cp modified_external_third_party/vulkan_core.h $vulkan_core_path
-    cp modified_external_third_party/vulkan_ohos.h $vulkan_ohos_path
-    cp modified_external_third_party/vulkan.h $vulkan_path
+    cp modified_external_third_party/vulkan_core.h $third_party_vulkan_path/vulkan_core.h
+    cp modified_external_third_party/vulkan_ohos.h $third_party_vulkan_path/vulkan_ohos.h
+    cp modified_external_third_party/vulkan.h $third_party_vulkan_path/vulkan.h
 else
-    echo "Cannot $third_party_vulkan_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
+    echo "Cannot find $third_party_vulkan_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
+    exit 1
+fi
+
+if [ -d "$third_party_dawn_path" ]; then
+
+    cp modified_external_third_party/dawn.json $third_party_dawn_path/dawn.json
+    cp modified_external_third_party/dawn_wire.json $third_party_dawn_path/dawn_wire.json
+else
+    echo "Cannot $third_party_dawn_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
     exit 1
 fi
 
