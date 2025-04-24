@@ -1512,6 +1512,7 @@ void Viewer::setCurrentSlide(int slide) {
     fSlides[slide]->load(SkIntToScalar(fWindow->width()) / scaleFactor,
                          SkIntToScalar(fWindow->height()) / scaleFactor);
     fCurrentSlide = slide;
+    LOGI("Current Slide: %{public}s", fSlides[slide]->getName().c_str());
     this->setupCurrentSlide();
 }
 

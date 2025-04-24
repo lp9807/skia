@@ -67,32 +67,25 @@ void Window_ohos::initDisplay(OHNativeWindow* window) {
     SkASSERT(window);
     // fBackendType = kNativeGL_BackendType;
     switch (fBackendType) {
-#ifdef SK_VULKAN
             case kVulkan_BackendType:
                 LOGI("Window_ohos::initDisplay Initializing Ganesh Vulkan");
                 fWindowContext = skwindow::MakeVulkanForOhos(
                        window, fRequestedDisplayParams->clone());
                 break;
-#if defined(SK_GRAPHITE) && !defined(SK_DAWN)
             case kGraphiteVulkan_BackendType:
                 LOGI("Window_ohos::initDisplay Initializing Graphite Native Vulkan");
                 fWindowContext = skwindow::MakeGraphiteVulkanForOhos(
                        window, fRequestedDisplayParams->clone());
                 break;
-#endif
-
-#if defined(SK_GRAPHITE) && defined(SK_DAWN)
 
             case kGraphiteDawn_BackendType:
                 LOGI("Window_ohos::initDisplay Initializing Graphite Dawn Vulkan");
                 fWindowContext = skwindow::MakeGraphiteDawnVulkanForOhos(
                        window, fRequestedDisplayParams->clone(), fOhosSkiaApp->fXComponent);
                 break;
-#endif
             default:
                 break;
 
-#endif
     }
 
     this->onBackendCreated();
@@ -109,7 +102,6 @@ void Window_ohos::onInval() {
 }
 
 void Window_ohos::paintIfNeeded() {
-    LOGI("Window_ohos::paintIfNeeded");
     if (fWindowContext) { // Check if initDisplay has already been called
         onPaint();
     } else {
