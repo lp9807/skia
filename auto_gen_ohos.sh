@@ -64,6 +64,7 @@ third_party_dng_sdk_path=$skia_path/third_party/externals/dng_sdk
 third_party_zlib_path=$skia_path/third_party/externals/zlib
 third_party_microhttpd_path=$skia_path/third_party/externals/microhttpd/src/include
 third_party_dawn_path=$skia_path/third_party/externals/dawn/src/dawn
+third_party_partition_alloc=$skia_path/third_party/externals/partition_alloc/src/partition_alloc
 third_party_vulkan_path=$skia_path/third_party/externals/vulkan-headers/include/vulkan
 
 # if [ -d "$third_party_microhttpd_path" ]; then
@@ -108,6 +109,15 @@ if [ -d "$third_party_dawn_path" ]; then
     cp modified_external_third_party/dawn_wire.json $third_party_dawn_path/dawn_wire.json
 else
     echo "Cannot $third_party_dawn_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
+    exit 1
+fi
+
+if [ -d "$third_party_partition_alloc" ]; then
+
+    cp modified_external_third_party/BUILD.gn $third_party_partition_alloc/BUILD.gn
+    cp modified_external_third_party/aarch64_support.h $third_party_partition_alloc/aarch64_support.h
+else
+    echo "Cannot $third_party_partition_alloc, make sure you have successfully run \`python3 tools/git-sync-deps\`"
     exit 1
 fi
 
