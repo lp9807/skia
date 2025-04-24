@@ -29,9 +29,6 @@ std::mutex OhosSkiaApp::fMutex;
 std::condition_variable OhosSkiaApp::fCon;
 std::unordered_map<std::string, OhosSkiaApp*> OhosSkiaApp::fInstanceMap;
 
-static ArkUI_NodeHandle fHandle;
-static ArkUI_NativeNodeAPI_1* fNodeApi;
-
 static std::string GetXComponentId(OH_NativeXComponent* component) {
     char idStr[OH_XCOMPONENT_ID_LEN_MAX + 1] = {};
     uint64_t idSize = OH_XCOMPONENT_ID_LEN_MAX + 1;
@@ -43,7 +40,7 @@ static std::string GetXComponentId(OH_NativeXComponent* component) {
     return std::string(idStr);
 }
 
-OhosSkiaApp::OhosSkiaApp(std::string& id, ArkUI_NodeHandle handle, ArkUI_NativeNodeAPI_1* nodeApi)
+OhosSkiaApp::OhosSkiaApp(std::string& id)
     : fId(id) {
     LOGI("OhosSkiaApp::OhosSkiaApp");
     auto renderCallback = OhosSkiaApp::GetNXComponentCallback();
@@ -71,7 +68,6 @@ void OhosSkiaApp::SetNativeXComponent(OH_NativeXComponent* component) {
 }
 
 void OhosSkiaApp::RenderThread() {
-    LOGI("OhosSkiaApp::RenderThread");
     while (fApp != nullptr) {
         std::unique_lock<std::mutex> locker(fMutex);
         if (!isAppQuit) {
@@ -82,12 +78,9 @@ void OhosSkiaApp::RenderThread() {
     }
 }
 
-OhosSkiaApp* OhosSkiaApp::GetInstance(std::string& id, ArkUI_NodeHandle handle, ArkUI_NativeNodeAPI_1* nodeApi) {
-    LOGI("OhosSkiaApp::GetInstance");
+OhosSkiaApp* OhosSkiaApp::GetInstance(std::string& id) {
     if (fInstanceMap.find(id) == fInstanceMap.end()) {
-        fHandle = handle;
-        fNodeApi = nodeApi;
-        OhosSkiaApp* instance = new OhosSkiaApp(id, handle, nodeApi);
+        OhosSkiaApp* instance = new OhosSkiaApp(id);
         fInstanceMap[id] = instance;
     }
     return fInstanceMap[id];
@@ -96,7 +89,7 @@ OhosSkiaApp* OhosSkiaApp::GetInstance(std::string& id, ArkUI_NodeHandle handle, 
 void OhosSkiaApp::SetInstance(std::string& id) {
     LOGI("OhosSkiaApp::SetInstance");
     if (fInstanceMap.find(id) == fInstanceMap.end()) {
-        OhosSkiaApp* instance = new OhosSkiaApp(id, fHandle, fNodeApi);
+        OhosSkiaApp* instance = new OhosSkiaApp(id);
         fInstanceMap[id] = instance;
     }
 }
@@ -104,35 +97,34 @@ void OhosSkiaApp::SetInstance(std::string& id) {
 void OhosSkiaApp::OnSurfaceCreatedCB(OH_NativeXComponent* component, void* window) {
     LOGI("OhosSkiaApp::OnSurfaceCreatedCB");
     std::string id = GetXComponentId(component);
-    auto render = OhosSkiaApp::GetInstance(id, fHandle, fNodeApi);
+    auto render = OhosSkiaApp::GetInstance(id);
     render->OnSurfaceCreated(component, window);
 }
 
 void OhosSkiaApp::OnSurfaceChangedCB(OH_NativeXComponent* component, void* window) {
     LOGI("OhosSkiaApp::OnSurfaceDestroyedCB");
     std::string id = GetXComponentId(component);
-    auto render = OhosSkiaApp::GetInstance(id, fHandle, fNodeApi);
+    auto render = OhosSkiaApp::GetInstance(id);
     render->OnSurfaceChanged(component, window);
 }
 
 void OhosSkiaApp::OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window) {
     LOGI("OhosSkiaApp::OnSurfaceDestroyedCB");
     std::string id = GetXComponentId(component);
-    auto render = OhosSkiaApp::GetInstance(id, fHandle, fNodeApi);
+    auto render = OhosSkiaApp::GetInstance(id);
     render->OnSurfaceDestroyed(component, window);
 }
 
 void OhosSkiaApp::DispatchTouchEventCB(OH_NativeXComponent* component, void* window) {
     LOGI("OhosSkiaApp::DispatchTouchEventCB");
     std::string id = GetXComponentId(component);
-    auto render = OhosSkiaApp::GetInstance(id, fHandle, fNodeApi);
+    auto render = OhosSkiaApp::GetInstance(id);
     render->DispatchTouchEvent(component, window);
 }
 
 void OhosSkiaApp::OnPaintIfNeededCB(OH_NativeXComponent* component, uint64_t timestamp, uint64_t targetTimestamp) {
-    LOGI("OhosSkiaApp::OnPaintIfNeeded");
     std::string id = GetXComponentId(component);
-    auto render = OhosSkiaApp::GetInstance(id, fHandle, fNodeApi);
+    auto render = OhosSkiaApp::GetInstance(id);
     render->OnPaintIfNeeded(component, timestamp, targetTimestamp);
 }
 
@@ -198,16 +190,6 @@ void OhosSkiaApp::OnSurfaceDestroyed(OH_NativeXComponent* component, void* windo
 }
 
 void OhosSkiaApp::setTitle(const char* title) const {
-    // Have to find a way to change the title form the XComponent...
-    // Fetch the XComponent
-    // Create a struct with the new title
-    // Call nodeAPI->setAttribute to modify the native application
-    ArkUI_AttributeItem item;
-    item.string = title;
-    if (fHandle == nullptr) {
-        LOGI("OhosSkiaApp::setTitle The node handle is invalid");
-    }
-    fNodeApi->setAttribute(fHandle, NODE_TEXT_CONTENT, &item);
 }
 
 void OhosSkiaApp::setUIState(const char* state) const {

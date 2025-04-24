@@ -54,7 +54,7 @@ public:
     Window* fWindow;
     static OH_NativeXComponent* fXComponent;
 
-    OhosSkiaApp(std::string& id, ArkUI_NodeHandle handle, ArkUI_NativeNodeAPI_1* nodeApi);
+    OhosSkiaApp(std::string& id);
 
     void postMessage(const Message& message) const;
     void readMessage(Message* message) const;
@@ -80,9 +80,7 @@ public:
     static void OnSurfaceDestroyedCB(OH_NativeXComponent* component, void* window);
     static void DispatchTouchEventCB(OH_NativeXComponent* component, void* window);
 
-    static OhosSkiaApp* GetInstance(std::string& id, 
-                                    ArkUI_NodeHandle handle, 
-                                    ArkUI_NativeNodeAPI_1* nodeApi);
+    static OhosSkiaApp* GetInstance(std::string& id);
 
     void SetInstance(std::string& id);
 
