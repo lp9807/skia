@@ -164,6 +164,11 @@ void FindAndDeclareBuiltinVariables(Program& program) {
                 // Set secondary color output if we find sk_SecondaryFragColor.
                 case SK_SECONDARYFRAGCOLOR_BUILTIN:
                     program.fInterface.fOutputSecondaryColor = true;
+                    program.fInterface.fUseHalfFloat = true;
+                    break;
+
+                case SK_FRAGCOLOR_BUILTIN:
+                    program.fInterface.fUseHalfFloat = true;
                     break;
             }
         }

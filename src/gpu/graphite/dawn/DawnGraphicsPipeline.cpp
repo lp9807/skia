@@ -327,6 +327,7 @@ sk_sp<DawnGraphicsPipeline> DawnGraphicsPipeline::Make(
     SkSL::ProgramSettings settings;
     settings.fSharpenTextures = true;
     settings.fForceNoRTFlip = true;
+    settings.fHalfIs32Bits = caps.shaderCaps()->fHalfIs32Bits;
 
     ShaderErrorHandler* errorHandler = caps.shaderErrorHandler();
 

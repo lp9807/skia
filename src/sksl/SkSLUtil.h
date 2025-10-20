@@ -98,6 +98,7 @@ struct ShaderCaps {
     bool fSampleMaskSupport = false;
     bool fExternalTextureSupport = false;
     bool fFloatIs32Bits = true;
+    bool fHalfIs32Bits = false;
 
     // isinf() is defined, and floating point infinities are handled according to IEEE standards.
     bool fInfinitySupport = false;

@@ -27,6 +27,7 @@ struct ProgramSettings {
     // If true, the destination fragment color can be read from sk_FragColor. It must be declared
     // inout. This is only supported in GLSL, when framebuffer-fetch is used.
     bool fFragColorIsInOut = false;
+    bool fHalfIs32Bits = false;
     // if true, all halfs are forced to be floats
     bool fForceHighPrecision = false;
     // if true, add -0.5 bias to LOD of all texture lookups

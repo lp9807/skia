@@ -18,7 +18,7 @@
 
 namespace GrPersistentCacheUtils {
 
-static constexpr int kCurrentVersion = 12;
+static constexpr int kCurrentVersion = 13;
 
 int GetCurrentVersion() {
     // The persistent cache stores a copy of the SkSL::Program::Interface struct. If you alter the
@@ -29,6 +29,7 @@ int GetCurrentVersion() {
         bool useLastFragColor;
         bool useRTFlipUniform;
         bool outputSecondaryColor;
+        bool halfIs32Bits;
     };
     static_assert(sizeof(SkSL::Program::Interface) == sizeof(KnownSkSLProgramInterface));
 
@@ -60,6 +61,7 @@ sk_sp<SkData> PackCachedShaders(SkFourByteTag shaderType,
             writer.writeBool(meta->fSettings->fFragColorIsInOut);
             writer.writeBool(meta->fSettings->fForceHighPrecision);
             writer.writeBool(meta->fSettings->fUsePushConstants);
+            writer.writeBool(meta->fSettings->fHalfIs32Bits);
         }
 
         writer.writeInt(meta->fAttributeNames.size());
@@ -109,6 +111,7 @@ bool UnpackCachedShaders(SkReadBuffer* reader,
             meta->fSettings->fForceNoRTFlip      = reader->readBool();
             meta->fSettings->fFragColorIsInOut   = reader->readBool();
             meta->fSettings->fForceHighPrecision = reader->readBool();
+            meta->fSettings->fUsePushConstants   = reader->readBool();
             meta->fSettings->fUsePushConstants   = reader->readBool();
         }
 

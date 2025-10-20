@@ -538,6 +538,8 @@ void DawnCaps::initShaderCaps(const wgpu::Device& device) {
         shaderCaps->fFBFetchSupport = true;
     }
 #endif
+
+    shaderCaps->fHalfIs32Bits = !device.HasFeature(wgpu::FeatureName::ShaderF16);
 }
 
 void DawnCaps::initFormatTable(const wgpu::Device& device) {

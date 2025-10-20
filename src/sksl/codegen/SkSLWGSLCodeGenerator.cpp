@@ -735,14 +735,14 @@ std::string_view address_space_to_str(PtrAddressSpace addressSpace) {
     return "unsupported";
 }
 
-std::string_view to_scalar_type(const Type& type) {
+std::string_view to_scalar_type(const Type& type, bool f16Support = false) {
     SkASSERT(type.typeKind() == Type::TypeKind::kScalar);
     switch (type.numberKind()) {
         // Floating-point numbers in WebGPU currently always have 32-bit footprint and
         // relaxed-precision is not supported without extensions. f32 is the only floating-point
         // number type in WGSL (see the discussion on https://github.com/gpuweb/gpuweb/issues/658).
         case Type::NumberKind::kFloat:
-            return "f32";
+            return (type.bitWidth() == 16 && f16Support) ? "f16" : "f32";
         case Type::NumberKind::kSigned:
             return "i32";
         case Type::NumberKind::kUnsigned:
@@ -761,20 +761,21 @@ std::string_view to_scalar_type(const Type& type) {
 // (see https://www.w3.org/TR/WGSL/#plain-types-section).
 std::string to_wgsl_type(const Context& context, const Type& raw, const Layout* layout = nullptr) {
     const Type& type = raw.resolve().scalarTypeForLiteral();
+    const bool enableF16Support = !context.fConfig->fSettings.fHalfIs32Bits;
     switch (type.typeKind()) {
         case Type::TypeKind::kScalar:
-            return std::string(to_scalar_type(type));
+            return std::string(to_scalar_type(type, enableF16Support));
 
         case Type::TypeKind::kAtomic:
             SkASSERT(type.matches(*context.fTypes.fAtomicUInt));
             return "atomic<u32>";
 
         case Type::TypeKind::kVector: {
-            std::string_view ct = to_scalar_type(type.componentType());
+            std::string_view ct = to_scalar_type(type.componentType(), enableF16Support);
             return String::printf("vec%d<%.*s>", type.columns(), (int)ct.length(), ct.data());
         }
         case Type::TypeKind::kMatrix: {
-            std::string_view ct = to_scalar_type(type.componentType());
+            std::string_view ct = to_scalar_type(type.componentType(), enableF16Support);
             return String::printf("mat%dx%d<%.*s>",
                                   type.columns(), type.rows(), (int)ct.length(), ct.data());
         }
@@ -4293,6 +4294,9 @@ void WGSLCodeGenerator::writeEnables() {
     }
     if (fProgram.fInterface.fOutputSecondaryColor) {
         this->writeLine("enable dual_source_blending;");
+    }
+    if (fProgram.fInterface.fUseHalfFloat && !fCaps.fHalfIs32Bits) {
+        this->writeLine("enable f16;");
     }
 }
 
