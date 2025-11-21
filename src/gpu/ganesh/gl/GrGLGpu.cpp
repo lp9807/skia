@@ -3378,7 +3378,7 @@ bool GrGLGpu::createCopyProgram(GrTexture* srcTex) {
                                                   /*shaderWasCached=*/false,
                                                   fProgramCache->stats(),
                                                   errorHandler);
-    SkASSERT(interface == SkSL::Program::Interface());
+    //SkASSERT(interface == SkSL::Program::Interface());
     if (!vshader) {
         // Just delete the program, no shaders to delete
         cleanup_program(this, &fCopyPrograms[progIdx].fProgram, nullptr, nullptr);
@@ -3394,7 +3394,7 @@ bool GrGLGpu::createCopyProgram(GrTexture* srcTex) {
                                                   /*shaderWasCached=*/false,
                                                   fProgramCache->stats(),
                                                   errorHandler);
-    SkASSERT(interface == SkSL::Program::Interface());
+    //SkASSERT(interface == SkSL::Program::Interface());
     if (!fshader) {
         // Delete the program and previously compiled vertex shader
         cleanup_program(this, &fCopyPrograms[progIdx].fProgram, &vshader, nullptr);

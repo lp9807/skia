@@ -89,6 +89,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <functional>
 
 using namespace skia_private;
 
@@ -238,6 +239,7 @@ private:
     std::string variablePrefix(const Variable& v);
 
     bool binaryOpNeedsComponentwiseMatrixPolyfill(const Type& left, const Type& right, Operator op);
+    bool ExpressionNeedsTypeConversion(const Type& left, const Expression& right);
 
     // Writers for expressions. These return the final expression text as a string, and emit any
     // necessary setup code directly into the program as necessary. The returned expression may be
@@ -291,6 +293,7 @@ private:
 
     // Constructor expressions
     std::string assembleAnyConstructor(const AnyConstructor& c);
+    std::string assembleSpecifiedConstructor(const Type& leftType, const AnyConstructor& c);
     std::string assembleConstructorCompound(const ConstructorCompound& c);
     std::string assembleConstructorCompoundVector(const ConstructorCompound& c);
     std::string assembleConstructorCompoundMatrix(const ConstructorCompound& c);
@@ -316,6 +319,8 @@ private:
     // name (e.g. `_skTemp123`).
     std::string writeScratchLet(const std::string& expr, bool isCompileTimeConstant = false);
     std::string writeScratchLet(const Expression& expr, Precedence parentPrecedence);
+
+    std::string writeScratchTypeConversion(const Type& type, const std::string& value);
 
     // Converts `expr` into a string and returns a scratch let-variable associated with the
     // expression. Compile-time constants and plain variable references will return the expression
@@ -414,6 +419,8 @@ private:
     int fLocalSizeX = 1;
     int fLocalSizeY = 1;
     int fLocalSizeZ = 1;
+
+    skia_private::TArray<const Type*> fFunctionReturnTypes;
 
     int fScratchCount = 0;
 };
@@ -759,9 +766,9 @@ std::string_view to_scalar_type(const Type& type, bool f16Support = false) {
 
 // Convert a SkSL type to a WGSL type. Handles all plain types except structure types
 // (see https://www.w3.org/TR/WGSL/#plain-types-section).
-std::string to_wgsl_type(const Context& context, const Type& raw, const Layout* layout = nullptr) {
+std::string to_wgsl_type(const Context& context, const Type& raw, const Layout* layout = nullptr, bool disableF16 = false) {
     const Type& type = raw.resolve().scalarTypeForLiteral();
-    const bool enableF16Support = !context.fConfig->fSettings.fHalfIs32Bits;
+    const bool enableF16Support = !disableF16 && !context.fConfig->fSettings.fHalfIs32Bits;
     switch (type.typeKind()) {
         case Type::TypeKind::kScalar:
             return std::string(to_scalar_type(type, enableF16Support));
@@ -916,9 +923,28 @@ std::optional<std::string_view> needs_builtin_type_conversion(const Variable& v)
         default:
             break;
     }
+    if(v.type().bitWidth() == 16 && 
+       (v.modifierFlags().isBuffer() || v.modifierFlags().isUniform())) {
+        return {"f16"};
+    }
     return std::nullopt;
 }
 
+std::optional<std::string_view> needs_intrinsic_type_conversion(const FunctionDeclaration& f) {
+    switch(f.intrinsicKind()) {
+        case k_dFdx_IntrinsicKind:
+        case k_dFdy_IntrinsicKind:
+        case k_sample_IntrinsicKind:
+        case k_sampleLod_IntrinsicKind:
+        case k_sampleGrad_IntrinsicKind:
+        case k_textureRead_IntrinsicKind:
+            return {"f32"};
+        default:
+            break;
+    }
+
+    return std::nullopt;
+}
 // Map a SkSL builtin flag to a WGSL builtin kind. Returns std::nullopt if `builtin` is not
 // not supported for WGSL.
 //
@@ -1683,6 +1709,7 @@ void WGSLCodeGenerator::writeFunction(const FunctionDefinition& f) {
 
     SkASSERT(!fAtFunctionScope);
     fAtFunctionScope = true;
+    fFunctionReturnTypes.push_back(&f.declaration().returnType());
 
     // WGSL parameters are immutable and are considered as taking no storage, but SkSL parameters
     // are real variables. To work around this, we make var-based copies of parameters. It's
@@ -1742,6 +1769,7 @@ void WGSLCodeGenerator::writeFunction(const FunctionDefinition& f) {
 
     SkASSERT(fAtFunctionScope);
     fAtFunctionScope = false;
+    fFunctionReturnTypes.pop_back();
 }
 
 void WGSLCodeGenerator::writeFunctionDeclaration(const FunctionDeclaration& decl,
@@ -2195,7 +2223,14 @@ void WGSLCodeGenerator::writeReturnStatement(const ReturnStatement& s) {
                                ? this->assembleExpression(*s.expression(), Precedence::kExpression)
                                : std::string();
     this->write("return ");
-    this->write(expr);
+    if (fAtFunctionScope) {
+        this->write(to_wgsl_type(fContext, *fFunctionReturnTypes.back()));
+        this->write("(");
+        this->write(expr);
+        this->write(")");
+    } else {
+        this->write(expr);
+    }
     this->write(";");
 }
 
@@ -2405,25 +2440,52 @@ void WGSLCodeGenerator::writeVarDeclaration(const VarDeclaration& varDecl) {
             varDecl.value() ? this->assembleExpression(*varDecl.value(), Precedence::kAssignment)
                             : std::string();
 
+    std::string modifierExpr;
     if (varDecl.var()->modifierFlags().isConst() ||
         (fProgram.fUsage->get(*varDecl.var()).fWrite == 1 && varDecl.value())) {
         // Use `const` at global scope, or if the value is a compile-time constant.
         SkASSERTF(varDecl.value(), "an immutable variable must specify a value");
         const bool useConst =
                 !fAtFunctionScope || Analysis::IsCompileTimeConstant(*varDecl.value());
-        this->write(useConst ? "const " : "let ");
+        modifierExpr = (useConst ? "const " : "let ");
     } else {
-        this->write("var ");
+        modifierExpr = "var ";
     }
-    this->write(this->assembleName(varDecl.var()->mangledName()));
-    this->write(": ");
-    this->write(to_wgsl_type(fContext, varDecl.var()->type(), &varDecl.var()->layout()));
 
-    if (varDecl.value()) {
+    const Type& varType = varDecl.var()->type();
+    const std::string varNameExpr = this->assembleName(varDecl.var()->mangledName());
+    const std::string varTypeExpr = to_wgsl_type(fContext, varType, &varDecl.var()->layout());
+    
+    bool needNegotiation = varDecl.value() && ExpressionNeedsTypeConversion(varType, *varDecl.value());
+    bool needScratch = needNegotiation && varType.isVector();
+    bool canMergeTypeConversion =
+            needNegotiation && varDecl.value()->kind() == Expression::Kind::kConstructorScalarCast;
+
+    if ( canMergeTypeConversion ) {
+        this->write( this->assembleSpecifiedConstructor(varType, varDecl.value()->asAnyConstructor()) );
+    } else if( needScratch ) {
+        const auto conversion = writeScratchTypeConversion(varType, initialValue);
+        this->write(modifierExpr + varNameExpr + ": " + varTypeExpr);
         this->write(" = ");
-        this->write(initialValue);
-    }
+        this->write(conversion);
+       
+    } else {
+        this->write(modifierExpr);
+        this->write(varNameExpr);
+        this->write(": ");
+        this->write(varTypeExpr);
 
+        if (needNegotiation) {
+            this->write(" = ");
+            this->write(varTypeExpr);
+            this->write("(");
+            this->write(initialValue);
+            this->write(")");
+        } else if (!initialValue.empty()) {
+            this->write(" = ");
+            this->write(initialValue);
+        }
+    }
     this->write(";");
 }
 
@@ -2467,8 +2529,44 @@ std::unique_ptr<WGSLCodeGenerator::LValue> WGSLCodeGenerator::makeLValue(const E
     return nullptr;
 }
 
+bool WGSLCodeGenerator::ExpressionNeedsTypeConversion(const Type& left,
+                                                      const Expression& right) {
+    std::function<bool(const Expression&)> noF16SupportCall;
+    noF16SupportCall = [&noF16SupportCall](const Expression& e) -> bool 
+    {
+        if(e.is<FunctionCall>()) {
+            const auto& func = e.as<FunctionCall>().function();
+            if( func.isIntrinsic() && needs_intrinsic_type_conversion(func).has_value() ) {
+                return true;
+            }
+        }
+        else if(e.is<IndexExpression>()) {
+            return noF16SupportCall(*e.as<IndexExpression>().base());
+        }
+        else if(e.is<Swizzle>()) {
+            return noF16SupportCall(*e.as<Swizzle>().base());
+        }
+        else if(e.is<BinaryExpression>()) {
+            const BinaryExpression& b = e.as<BinaryExpression>();
+            return noF16SupportCall(*b.left()) ||
+                   noF16SupportCall(*b.right());
+        }
+        else if(e.is<FieldAccess>()) {
+            return noF16SupportCall(*e.as<FieldAccess>().base());
+        }
+        else if(e.is<VariableReference>()) {
+            const Variable& v = *e.as<VariableReference>().variable();
+            return v.modifierFlags().isUniform() || v.modifierFlags().isBuffer();
+        }
+
+        return false;
+    };
+    
+    return noF16SupportCall(right) && left.bitWidth() == 16;
+}
+
 std::string WGSLCodeGenerator::assembleExpression(const Expression& e,
-                                                  Precedence parentPrecedence) {
+                                                  Precedence parentPrecedence ) {
     switch (e.kind()) {
         case Expression::Kind::kBinary:
             return this->assembleBinaryExpression(e.as<BinaryExpression>(), parentPrecedence);
@@ -2706,9 +2804,21 @@ std::string WGSLCodeGenerator::assembleBinaryExpression(const Expression& left,
             return "";
         }
 
+        const bool needNegotiation = ExpressionNeedsTypeConversion(left.type(), right);
+        const bool needScratch = needNegotiation && left.type().isVector();
+        const bool canMergeTypeConversion = needNegotiation && right.kind() == Expression::Kind::kConstructorScalarCast;
+
         if (op.kind() == OperatorKind::EQ) {
             // Evaluate the right-hand side of simple assignment (`a = b` --> `b`).
             expr = this->assembleExpression(right, Precedence::kAssignment);
+
+            if ( canMergeTypeConversion ) {
+                this->write(this->assembleSpecifiedConstructor(left.type(), right.asAnyConstructor()));
+            } else if( needScratch ) {
+                expr = writeScratchTypeConversion(left.type(), expr);
+            } else if( needNegotiation ) {
+                expr = to_wgsl_type(fContext, left.type()) + "(" + expr + ")";
+            }
         } else {
             // Evaluate the right-hand side of compound-assignment (`a += b` --> `a + b`).
             op = op.removeAssignment();
@@ -2724,6 +2834,11 @@ std::string WGSLCodeGenerator::assembleBinaryExpression(const Expression& left,
                 expr = this->assembleComponentwiseMatrixBinary(left.type(), right.type(),
                                                                lhs, rhs, op);
             } else {
+                if (needScratch) {
+                    rhs = writeScratchTypeConversion(left.type(), rhs);
+                } else if (needNegotiation) {
+                    rhs = to_wgsl_type(fContext, left.type()) + "(" + rhs + ")";
+                }
                 expr = lhs + operator_name(op) + rhs;
             }
         }
@@ -2816,20 +2931,32 @@ std::string WGSLCodeGenerator::assembleFieldAccess(const FieldAccess& f) {
         return expr;
     }
 
+    bool needTypeConversion = false;
     switch (f.ownerKind()) {
         case FieldAccess::OwnerKind::kDefault:
             expr = this->assembleExpression(*f.base(), Precedence::kPostfix) + '.';
             break;
 
         case FieldAccess::OwnerKind::kAnonymousInterfaceBlock:
-            if (f.base()->is<VariableReference>() &&
-                field->fLayout.fBuiltin != SK_POINTSIZE_BUILTIN) {
-                expr = this->variablePrefix(*f.base()->as<VariableReference>().variable());
+            if (f.base()->is<VariableReference>())
+            {
+                const auto& v = *f.base()->as<VariableReference>().variable();
+                if(field->fLayout.fBuiltin != SK_POINTSIZE_BUILTIN) {
+                    expr = this->variablePrefix(v);
+                }
+                needTypeConversion = 
+                    field->fType->bitWidth() == 16 &&
+                    (v.modifierFlags().isBuffer() || v.modifierFlags().isUniform()); 
             }
             break;
     }
 
     expr += this->assembleName(field->fName);
+    
+    if( needTypeConversion ) {
+        expr = to_wgsl_type(fContext, *field->fType) + "(" + expr + ")"; 
+    }
+
     return expr;
 }
 
@@ -2859,6 +2986,9 @@ std::string WGSLCodeGenerator::assembleSimpleIntrinsic(std::string_view intrinsi
     for (int index = 0; index < args.size(); ++index) {
         expr += separator();
 
+        const bool needNegotiation = 
+            needs_intrinsic_type_conversion(call.function()).has_value() && 
+            args[index]->type().bitWidth() == 16;
         std::string argument = this->assembleExpression(*args[index], Precedence::kSequence);
         if (args[index]->type().isAtomic()) {
             // WGSL passes atomic values to intrinsics as pointers.
@@ -2867,6 +2997,11 @@ std::string WGSLCodeGenerator::assembleSimpleIntrinsic(std::string_view intrinsi
         } else if (allConstant && index == 0) {
             // We can use a scratch-let for argument 0 to dodge WGSL overflow errors. (skia:14385)
             expr += this->writeScratchLet(argument);
+        } else if ( needNegotiation ) {
+            expr += "f32(";
+            expr += argument;
+            expr += ")";
+            expr = "f16(" + expr + ")";
         } else {
             expr += argument;
         }
@@ -3695,6 +3830,44 @@ std::string WGSLCodeGenerator::writeScratchVar(const Type& type, const std::stri
     return scratchVarName;
 }
 
+std::string WGSLCodeGenerator::writeScratchTypeConversion(const Type& type, const std::string& rightExpr) {
+    std::string expr = to_wgsl_type(fContext, type) + "(";
+    switch (type.typeKind()) {
+        case Type::TypeKind::kVector: {
+            auto scratchExpr = this->writeScratchLet(rightExpr);
+            const std::string componentTypeExpr = to_wgsl_type(fContext, type.componentType());
+
+            switch (type.columns()) {
+                case 2:
+                    expr += componentTypeExpr + "(" + scratchExpr + ".x), " +
+                            componentTypeExpr + "(" + scratchExpr + ".y)";
+                    break;
+                case 3:
+                    expr += componentTypeExpr + "(" + scratchExpr + ".x, " +
+                            componentTypeExpr + "(" + scratchExpr + ".y," + 
+                            componentTypeExpr + "(" + scratchExpr + ".z)";
+                    break;
+                case 4:
+                    expr += componentTypeExpr + "(" + scratchExpr + ".x), " +
+                            componentTypeExpr + "(" + scratchExpr + ".y)," +
+                            componentTypeExpr + "(" + scratchExpr + ".z)," +
+                            componentTypeExpr + "(" + scratchExpr + ".w)";
+                    break;
+            }
+        } break;
+        case Type::TypeKind::kMatrix:
+        case Type::TypeKind::kArray:
+        case Type::TypeKind::kTexture:
+        case Type::TypeKind::kAtomic:
+        default:
+            SkDEBUGFAILF("%s: Conversion required but not implemented yet!", to_wgsl_type(fContext, type).c_str());
+            break;
+    }
+
+    expr += ")";
+    return expr;
+}
+
 std::string WGSLCodeGenerator::writeScratchLet(const std::string& expr,
                                                bool isCompileTimeConstant) {
     std::string scratchVarName = "_skTemp" + std::to_string(fScratchCount++);
@@ -3855,6 +4028,18 @@ std::string WGSLCodeGenerator::assembleVariableReference(const VariableReference
         expr.push_back(')');
     }
 
+    return expr;
+}
+
+std::string WGSLCodeGenerator::assembleSpecifiedConstructor(const Type& type, const AnyConstructor& c) {
+    std::string expr = to_wgsl_type(fContext, type);
+    expr.push_back('(');
+    auto separator = SkSL::String::Separator();
+    for (const auto& e : c.argumentSpan()) {
+        expr += separator();
+        expr += this->assembleExpression(*e, Precedence::kSequence);
+    }
+    expr.push_back(')');
     return expr;
 }
 
@@ -4274,7 +4459,8 @@ void WGSLCodeGenerator::writeFields(SkSpan<const Field> fields, const MemoryLayo
                 SkDEBUGFAILF("need polyfill for %s", info->fReplacementName.c_str());
             }
         } else {
-            this->write(to_wgsl_type(fContext, *field.fType, &field.fLayout));
+            // TODO_luop: disable F16 type with uniform and buffer declarations for now.
+            this->write(to_wgsl_type(fContext, *field.fType, &field.fLayout, memoryLayout));
         }
         this->writeLine(",");
     }
@@ -4295,7 +4481,7 @@ void WGSLCodeGenerator::writeEnables() {
     if (fProgram.fInterface.fOutputSecondaryColor) {
         this->writeLine("enable dual_source_blending;");
     }
-    if (fProgram.fInterface.fUseHalfFloat && !fCaps.fHalfIs32Bits) {
+    if (!fCaps.fHalfIs32Bits) {
         this->writeLine("enable f16;");
     }
 }

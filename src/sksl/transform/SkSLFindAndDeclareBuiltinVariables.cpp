@@ -141,6 +141,13 @@ void FindAndDeclareBuiltinVariables(Program& program) {
         if (var->isBuiltin()) {
             scanner.addDeclaringElement(var);
 
+            auto& primType = !var->type().isScalar() ? var->type().componentType() : var->type();
+            if(primType.numberKind() == Type::NumberKind::kFloat &&
+               primType.bitWidth() == 16 ) 
+            {
+                program.fInterface.fUseHalfFloat = true;
+            }
+
             switch (var->layout().fBuiltin) {
                 // Set the RTFlip program input if we find sk_FragCoord or sk_Clockwise.
                 case SK_FRAGCOORD_BUILTIN:
@@ -164,12 +171,16 @@ void FindAndDeclareBuiltinVariables(Program& program) {
                 // Set secondary color output if we find sk_SecondaryFragColor.
                 case SK_SECONDARYFRAGCOLOR_BUILTIN:
                     program.fInterface.fOutputSecondaryColor = true;
-                    program.fInterface.fUseHalfFloat = true;
                     break;
-
-                case SK_FRAGCOLOR_BUILTIN:
-                    program.fInterface.fUseHalfFloat = true;
-                    break;
+            }
+        } else if( (ProgramConfig::IsVertex(program.fConfig->fKind) && var->modifierFlags() & ModifierFlag::kOut) || 
+                   (ProgramConfig::IsFragment(program.fConfig->fKind) && var->modifierFlags() & ModifierFlag::kIn) )
+        {
+            auto& primType = !var->type().isScalar() ? var->type().componentType() : var->type();
+            if(primType.numberKind() == Type::NumberKind::kFloat &&
+               primType.bitWidth() == 16 ) 
+            {
+                program.fInterface.fUseHalfFloat = true;
             }
         }
     }
