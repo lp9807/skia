@@ -39,7 +39,6 @@ struct GrShaderCaps : SkSL::ShaderCaps {
     bool fNonconstantArrayIndexSupport = false;
     // frexp(), ldexp(), findMSB(), findLSB().
     bool fBitManipulationSupport = false;
-    bool fHalfIs32Bits = false;
     bool fHasLowFragmentPrecision = false;
     // Use a reduced set of rendering algorithms or less optimal effects in order to reduce the
     // number of unique shaders generated.

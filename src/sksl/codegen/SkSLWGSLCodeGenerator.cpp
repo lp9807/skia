@@ -787,7 +787,7 @@ std::string to_wgsl_type(const Context& context, const Type& raw, const Layout* 
                                   type.columns(), type.rows(), (int)ct.length(), ct.data());
         }
         case Type::TypeKind::kArray: {
-            std::string result = "array<" + to_wgsl_type(context, type.componentType(), layout);
+            std::string result = "array<" + to_wgsl_type(context, type.componentType(), layout, disableF16);
             if (!type.isUnsizedArray()) {
                 result += ", ";
                 result += std::to_string(type.columns());
@@ -945,6 +945,17 @@ std::optional<std::string_view> needs_intrinsic_type_conversion(const FunctionDe
 
     return std::nullopt;
 }
+
+bool type_needs_scratch_conversion(const Type& type) {
+    switch( type.typeKind() ) {
+        case Type::TypeKind::kArray:
+            return true; //type_needs_scratch_conversion(type.componentType());
+        default:
+            break;
+    }
+    return false;
+}
+
 // Map a SkSL builtin flag to a WGSL builtin kind. Returns std::nullopt if `builtin` is not
 // not supported for WGSL.
 //
@@ -2457,12 +2468,12 @@ void WGSLCodeGenerator::writeVarDeclaration(const VarDeclaration& varDecl) {
     const std::string varTypeExpr = to_wgsl_type(fContext, varType, &varDecl.var()->layout());
     
     bool needNegotiation = varDecl.value() && ExpressionNeedsTypeConversion(varType, *varDecl.value());
-    bool needScratch = needNegotiation && varType.isVector();
+    bool needScratch = needNegotiation && type_needs_scratch_conversion(varType);
     bool canMergeTypeConversion =
             needNegotiation && varDecl.value()->kind() == Expression::Kind::kConstructorScalarCast;
 
     if ( canMergeTypeConversion ) {
-        this->write( this->assembleSpecifiedConstructor(varType, varDecl.value()->asAnyConstructor()) );
+        this->write( this->assembleSpecifiedConstructor(varType, varDecl.value()->asAnyConstructor()));
     } else if( needScratch ) {
         const auto conversion = writeScratchTypeConversion(varType, initialValue);
         this->write(modifierExpr + varNameExpr + ": " + varTypeExpr);
@@ -2805,7 +2816,7 @@ std::string WGSLCodeGenerator::assembleBinaryExpression(const Expression& left,
         }
 
         const bool needNegotiation = ExpressionNeedsTypeConversion(left.type(), right);
-        const bool needScratch = needNegotiation && left.type().isVector();
+        const bool needScratch = needNegotiation && type_needs_scratch_conversion(left.type());
         const bool canMergeTypeConversion = needNegotiation && right.kind() == Expression::Kind::kConstructorScalarCast;
 
         if (op.kind() == OperatorKind::EQ) {
@@ -2888,6 +2899,22 @@ std::string WGSLCodeGenerator::assembleBinaryExpression(const Expression& left,
         if (bothSidesConstant) {
             lhs = this->writeScratchLet(lhs);
         }
+        else {
+            if (ExpressionNeedsTypeConversion(left.type(), left)) {
+                if (type_needs_scratch_conversion(left.type())) {
+                    lhs = writeScratchTypeConversion(left.type(), lhs);
+                } else {
+                    lhs = to_wgsl_type(fContext, left.type()) + "(" + lhs + ")";
+                }
+            }
+            if (ExpressionNeedsTypeConversion(right.type(), right)) {
+                if (type_needs_scratch_conversion(right.type())) {
+                    rhs = writeScratchTypeConversion(right.type(), rhs);
+                } else {
+                    rhs = to_wgsl_type(fContext, right.type()) + "(" + rhs + ")";
+                }
+            }
+        }
 
         expr += lhs + operator_name(op) + rhs;
     }
@@ -2953,8 +2980,11 @@ std::string WGSLCodeGenerator::assembleFieldAccess(const FieldAccess& f) {
 
     expr += this->assembleName(field->fName);
     
-    if( needTypeConversion ) {
-        expr = to_wgsl_type(fContext, *field->fType) + "(" + expr + ")"; 
+    // TODO_luop: fix the type mismatch for scalar ones right away, 
+    //            while the complex types need to be fixed on the caller side.
+    if (needTypeConversion && !type_needs_scratch_conversion(*field->fType)) 
+    {
+        expr = to_wgsl_type(fContext, *field->fType) + "(" + expr + ")";
     }
 
     return expr;
@@ -3812,8 +3842,17 @@ std::string WGSLCodeGenerator::assemblePostfixExpression(const PostfixExpression
 }
 
 std::string WGSLCodeGenerator::assembleSwizzle(const Swizzle& swizzle) {
-    return this->assembleExpression(*swizzle.base(), Precedence::kPostfix) + "." +
+    std::string expr = this->assembleExpression(*swizzle.base(), Precedence::kPostfix) + "." +
            Swizzle::MaskString(swizzle.components());
+
+    if (ExpressionNeedsTypeConversion(swizzle.type(), swizzle)) {
+        if (type_needs_scratch_conversion(swizzle.type())) {
+            expr = writeScratchTypeConversion(swizzle.type(), expr);
+        } else {
+            expr = to_wgsl_type(fContext, swizzle.type()) + "(" + expr + ")";
+        }
+    }
+    return expr;
 }
 
 std::string WGSLCodeGenerator::writeScratchVar(const Type& type, const std::string& value) {
@@ -3843,8 +3882,8 @@ std::string WGSLCodeGenerator::writeScratchTypeConversion(const Type& type, cons
                             componentTypeExpr + "(" + scratchExpr + ".y)";
                     break;
                 case 3:
-                    expr += componentTypeExpr + "(" + scratchExpr + ".x, " +
-                            componentTypeExpr + "(" + scratchExpr + ".y," + 
+                    expr += componentTypeExpr + "(" + scratchExpr + ".x), " +
+                            componentTypeExpr + "(" + scratchExpr + ".y)," + 
                             componentTypeExpr + "(" + scratchExpr + ".z)";
                     break;
                 case 4:
@@ -3855,12 +3894,19 @@ std::string WGSLCodeGenerator::writeScratchTypeConversion(const Type& type, cons
                     break;
             }
         } break;
-        case Type::TypeKind::kMatrix:
         case Type::TypeKind::kArray:
+            // TODO_luop: handle contrustion of array from compounds properly.
+            if(type_needs_scratch_conversion(type.componentType())) {
+                expr += writeScratchTypeConversion( type.componentType(), rightExpr );
+            } else {
+                expr += rightExpr;
+            } break;
+        case Type::TypeKind::kMatrix:
         case Type::TypeKind::kTexture:
         case Type::TypeKind::kAtomic:
         default:
-            SkDEBUGFAILF("%s: Conversion required but not implemented yet!", to_wgsl_type(fContext, type).c_str());
+            expr += rightExpr;
+            SkDebugf("%s: explicit cast to convert.", to_wgsl_type(fContext, type).c_str());
             break;
     }
 

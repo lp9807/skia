@@ -112,7 +112,7 @@ bool UnpackCachedShaders(SkReadBuffer* reader,
             meta->fSettings->fFragColorIsInOut   = reader->readBool();
             meta->fSettings->fForceHighPrecision = reader->readBool();
             meta->fSettings->fUsePushConstants   = reader->readBool();
-            meta->fSettings->fUsePushConstants   = reader->readBool();
+            meta->fSettings->fHalfIs32Bits       = reader->readBool();
         }
 
         meta->fAttributeNames.resize(reader->readInt());
