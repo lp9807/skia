@@ -44,6 +44,7 @@ std::unique_ptr<WindowContext> MakeD3D12ForWin(HWND, std::unique_ptr<const Displ
 std::unique_ptr<WindowContext> MakeGraphiteDawnForWin(HWND,
                                                       std::unique_ptr<const DisplayParams>,
                                                       sk_app::Window::BackendType backendType);
+std::unique_ptr<WindowContext> MakeGraphiteDawnVulkanForWin(HWND, std::unique_ptr<const DisplayParams>);
 #endif
 #endif
 
