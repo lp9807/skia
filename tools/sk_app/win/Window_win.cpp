@@ -363,10 +363,16 @@ bool Window_win::attach(BackendType attachType) {
 #endif
 #ifdef SK_DAWN
 #if defined(SK_GRAPHITE)
+#if defined(SK_VULKAN)
+        case kGraphiteDawn_BackendType:
+            fWindowContext = skwindow::MakeGraphiteDawnVulkanForWin(fHWnd, fRequestedDisplayParams);
+            break;
+#else
         case kGraphiteDawn_BackendType:
             fWindowContext =
                     skwindow::MakeGraphiteDawnD3D12ForWin(fHWnd, fRequestedDisplayParams->clone());
             break;
+#endif
 #endif
 #endif
         case kRaster_BackendType:
