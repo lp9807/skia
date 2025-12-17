@@ -198,6 +198,7 @@ skia_component("window") {
             "GraphiteDawnWindowContext.cpp",
             "GraphiteDawnWindowContext.h",
             "win/GraphiteDawnD3D12WindowContext_win.cpp",
+            "win/GraphiteDawnVulkanWindowContext_win.cpp",
           ]
         }
       }

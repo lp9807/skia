@@ -39,6 +39,7 @@ std::unique_ptr<WindowContext> MakeD3D12ForWin(HWND, const DisplayParams&);
 
 #ifdef SK_DAWN
 #if defined(SK_GRAPHITE)
+std::unique_ptr<WindowContext> MakeGraphiteDawnVulkanForWin(HWND, const DisplayParams&);
 std::unique_ptr<WindowContext> MakeGraphiteDawnD3D12ForWin(HWND, const DisplayParams&);
 #endif
 #endif
