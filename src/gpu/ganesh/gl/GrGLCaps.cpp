@@ -1161,6 +1161,16 @@ void GrGLCaps::initFSAASupport(const GrContextOptions& contextOptions,
             fMSFBOType = kNone_MSFBOType;
         }
     }
+
+    static const char* msFBOTypeStr[] = {
+        "NoneType",
+        "StandardType",
+        "AppleType",
+        "IMGType",
+        "ExtType",
+    };
+
+    SkDebugf("LLLL - GrGLCaps::initFSAASupport - initialize MSAA FBOType as: %s\n", msFBOTypeStr[fMSFBOType]);
 }
 
 void GrGLCaps::initBlendEqationSupport(const GrGLContextInfo& ctxInfo) {

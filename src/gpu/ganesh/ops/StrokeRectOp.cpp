@@ -533,6 +533,7 @@ public:
     }
 
     const char* name() const override { return "AAStrokeRect"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {

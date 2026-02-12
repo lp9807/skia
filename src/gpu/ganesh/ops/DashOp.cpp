@@ -246,6 +246,7 @@ public:
     }
 
     const char* name() const override { return "DashOp"; }
+    GrAAType aaType() const override { return static_cast<GrAAType>(aaMode()); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {

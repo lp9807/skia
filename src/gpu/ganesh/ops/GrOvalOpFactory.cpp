@@ -1266,6 +1266,7 @@ public:
     }
 
     const char* name() const override { return "CircleOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {
@@ -1638,6 +1639,7 @@ public:
     }
 
     const char* name() const override { return "ButtCappedDashedCircleOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {
@@ -1976,6 +1978,7 @@ public:
     }
 
     const char* name() const override { return "EllipseOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {
@@ -2265,6 +2268,7 @@ public:
     }
 
     const char* name() const override { return "DIEllipseOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {
@@ -2624,6 +2628,7 @@ public:
     }
 
     const char* name() const override { return "CircularRRectOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {
@@ -2998,6 +3003,7 @@ public:
     }
 
     const char* name() const override { return "EllipticalRRectOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {

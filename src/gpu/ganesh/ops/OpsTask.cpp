@@ -627,6 +627,8 @@ bool OpsTask::onExecute(GrOpFlushState* flushState) {
             ? GrStoreOp::kDiscard
             : GrStoreOp::kStore;
 
+    SkDebugf("LLLL - OpsTask::onExecute - create_render_pass with fUsesMSAASurface: %s\n", fUsesMSAASurface ? "yes" : "no" ); 
+
     GrOpsRenderPass* renderPass = create_render_pass(flushState->gpu(),
                                                      proxy->peekRenderTarget(),
                                                      fUsesMSAASurface,
@@ -990,7 +992,16 @@ void OpsTask::recordOp(
         return;
     }
 
+    static const char *aaTypeStr[] = {
+        "None", "Coverage", "MSAA"
+    };
+
     fUsesMSAASurface |= usesMSAA;
+    SkDebugf("LLLL - OpsTask::recordOp - 0x%p - name: %s, aaType: %s, usesMSAA: %s\n", 
+        (void*)this,
+        op->name(), 
+        aaTypeStr[static_cast<size_t>(op->aaType())],
+        usesMSAA? "yes": "no");
 
     // Account for this op's bounds before we attempt to combine.
     // NOTE: The caller should have already called "op->setClippedBounds()" by now, if applicable.
@@ -1074,6 +1085,8 @@ void OpsTask::forwardCombine(const GrCaps& caps) {
 
 GrRenderTask::ExpectedOutcome OpsTask::onMakeClosed(GrRecordingContext* rContext,
                                                     SkIRect* targetUpdateBounds) {
+    SkDebugf("LLLL - OpsTask::onMakeClosed - 0x%p\n", (void*)this);
+
     this->forwardCombine(*rContext->priv().caps());
     if (!this->isColorNoOp()) {
         GrSurfaceProxy* proxy = this->target(0);

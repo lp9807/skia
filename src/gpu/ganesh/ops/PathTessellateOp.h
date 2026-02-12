@@ -74,6 +74,7 @@ private:
 
     // GrDrawOp overrides.
     const char* name() const override { return "PathTessellateOp"; }
+    GrAAType aaType() const override { return fAAType; }
     bool usesMSAA() const override { return fAAType == GrAAType::kMSAA; }
     void visitProxies(const GrVisitProxyFunc&) const override;
     GrProcessorSet::Analysis finalize(const GrCaps&, const GrAppliedClip*, GrClampType) override;

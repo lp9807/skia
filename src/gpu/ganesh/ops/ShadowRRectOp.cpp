@@ -289,6 +289,7 @@ public:
     }
 
     const char* name() const override { return "ShadowCircularRRectOp"; }
+    GrAAType aaType() const override { return GrAAType::kNone; }
 
     FixedFunctionFlags fixedFunctionFlags() const override { return FixedFunctionFlags::kNone; }
 

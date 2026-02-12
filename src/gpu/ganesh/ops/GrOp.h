@@ -101,6 +101,7 @@ public:
     virtual ~GrOp() = default;
 
     virtual const char* name() const = 0;
+    virtual GrAAType aaType() const = 0;
 
     virtual void visitProxies(const GrVisitProxyFunc&) const {
         // This default implementation assumes the op has no proxies

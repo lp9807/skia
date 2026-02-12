@@ -140,6 +140,7 @@ public:
     }
 
     const char* name() const override { return "FillRectOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {

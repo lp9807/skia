@@ -76,6 +76,7 @@ sk_sp<GrGLTextureRenderTarget> GrGLTextureRenderTarget::MakeWrapped(
         GrWrapCacheable cacheable,
         GrMipmapStatus mipmapStatus,
         std::string_view label) {
+    SkDebugf("GrGLTextureRenderTarget::MakeWrapped - sample count: %d\n", sampleCount);
     return sk_sp<GrGLTextureRenderTarget>(
             new GrGLTextureRenderTarget(gpu,
                                         sampleCount,

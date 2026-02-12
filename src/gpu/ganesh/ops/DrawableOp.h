@@ -35,6 +35,7 @@ public:
                             const SkRect& bounds);
 
     const char* name() const override { return "Drawable"; }
+    GrAAType aaType() const override { return GrAAType::kNone; }
 
 private:
     friend class GrOp; // for ctor

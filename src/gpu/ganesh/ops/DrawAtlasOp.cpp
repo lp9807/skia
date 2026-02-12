@@ -71,6 +71,7 @@ public:
                     const SkRect* rects, const SkColor* colors);
 
     const char* name() const override { return "DrawAtlasOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         if (fProgramInfo) {

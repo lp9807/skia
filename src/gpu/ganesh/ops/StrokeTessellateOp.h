@@ -65,6 +65,8 @@ private:
     }
 
     const char* name() const override { return "StrokeTessellateOp"; }
+    GrAAType aaType() const override { return fAAType; }
+
     void visitProxies(const GrVisitProxyFunc&) const override;
     bool usesMSAA() const override { return fAAType == GrAAType::kMSAA; }
     GrProcessorSet::Analysis finalize(const GrCaps&, const GrAppliedClip*, GrClampType) override;

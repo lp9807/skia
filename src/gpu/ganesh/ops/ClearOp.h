@@ -42,6 +42,7 @@ public:
                                        bool insideMask);
 
     const char* name() const override { return "Clear"; }
+    GrAAType aaType() const override { return GrAAType::kNone; }
 
     const std::array<float, 4>& color() const { return fColor; }
     bool stencilInsideMask() const { return fStencilInsideMask; }

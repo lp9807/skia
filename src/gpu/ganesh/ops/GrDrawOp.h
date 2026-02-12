@@ -39,6 +39,10 @@ public:
         return this->fixedFunctionFlags() & FixedFunctionFlags::kUsesHWAA;
     }
 
+    GrAAType aaType() const override {
+        return GrAAType::kNone;
+    }
+
     /**
      * Specifies the effect of clipToShape().
      */

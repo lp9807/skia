@@ -133,6 +133,7 @@ public:
                             GrAA);
 
     const char* name() const override { return "FillRRectOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     FixedFunctionFlags fixedFunctionFlags() const override { return fHelper.fixedFunctionFlags(); }
 

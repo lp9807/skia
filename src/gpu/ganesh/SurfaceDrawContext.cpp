@@ -109,6 +109,8 @@ using namespace skia_private;
 
 namespace {
 
+constexpr char *aaTypeStr[] = { "None", "Coverage", "MSAA" };
+
 void op_bounds(SkRect* bounds, const GrOp* op) {
     *bounds = op->bounds();
     if (op->hasZeroArea()) {
@@ -330,6 +332,11 @@ SurfaceDrawContext::SurfaceDrawContext(GrRecordingContext* rContext,
                 (fSurfaceProps.flags() & SkSurfaceProps::kDynamicMSAA_Flag) &&
                 rContext->priv().caps()->supportsDynamicMSAA(this->asRenderTargetProxy())) {
     SkDEBUGCODE(this->validate();)
+    SkDebugf("LLLL - SurfaceDrawContext::Ctor - fCanUseDynamicMSAA : %s, sample count: %d,  surfaceProp flag: 0x%x\n",
+        fCanUseDynamicMSAA ? "enable" : "disable",
+        this->asRenderTargetProxy()->numSamples(),
+        fSurfaceProps.flags()
+     );
 }
 
 SurfaceDrawContext::~SurfaceDrawContext() {
@@ -595,6 +602,8 @@ void SurfaceDrawContext::drawFilledQuad(const GrClip* clip,
         } else {
             aaType = this->chooseAAType(aa);
         }
+
+        SkDebugf("LLLL - SurfaceDrawContext::drawFillQuad - aaType: %s\n", aaTypeStr[static_cast<size_t>(aaType)]);
         this->addDrawOp(finalClip, FillRectOp::Make(fContext, std::move(paint), aaType,
                                                     quad, ss));
     }

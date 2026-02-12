@@ -135,6 +135,7 @@ EGLGLTestContext::EGLGLTestContext(GrGLStandard forcedGpuAPI, EGLGLTestContext* 
         bool gles = kGLES_GrGLStandard == kStandards[api];
 
         if (!eglBindAPI(gles ? EGL_OPENGL_ES_API : EGL_OPENGL_API)) {
+            SkDebugf("eglBindAPI failed. API standard: %s\n", gles ? "gles" : "gl");
             continue;
         }
 

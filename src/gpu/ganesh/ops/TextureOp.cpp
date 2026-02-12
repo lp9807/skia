@@ -269,6 +269,7 @@ public:
     }
 
     const char* name() const override { return "TextureOp"; }
+    GrAAType aaType() const override { return fMetadata.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         bool mipped = (fMetadata.mipmapMode() != GrSamplerState::MipmapMode::kNone);

@@ -138,6 +138,7 @@ public:
     }
 
     const char* name() const override { return "TestOp"; }
+    GrAAType aaType() const override { return GrAAType::kNone; }
 
     void writeResult(int result[]) const {
         for (const auto& op : ChainRange<TestOp>(this)) {

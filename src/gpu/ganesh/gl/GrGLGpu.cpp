@@ -2458,14 +2458,28 @@ GrOpsRenderPass* GrGLGpu::onGetOpsRenderPass(
     if (!fCachedOpsRenderPass) {
         fCachedOpsRenderPass = std::make_unique<GrGLOpsRenderPass>(this);
     }
+
+    SkDebugf("LLLL - GrGLGpu::onGetOpsRenderPass - begin - useMultisampleFBO: %d, sample count: %d, dim: %dx%d.",
+                    useMultisampleFBO, rt->numSamples(),
+                    rt->dimensions().width(),
+                    rt->dimensions().height() );
+
     if (useMultisampleFBO && rt->numSamples() == 1) {
         // We will be using dynamic msaa. Ensure there is an attachment.
+        SkDebugf("LLLL - GrGLGpu::onGetOpsRenderPass - ensureDynamicMSAAAttachment.");
+     
         auto glRT = static_cast<GrGLRenderTarget*>(rt);
         if (!glRT->ensureDynamicMSAAAttachment()) {
             SkDebugf("WARNING: Failed to make dmsaa attachment. Render pass will be dropped.");
             return nullptr;
         }
     }
+
+    SkDebugf("LLLL - GrGLGpu::onGetOpsRenderPass - after - useMultisampleFBO: %d, sample count: %d, dim: %dx%d.",
+                    useMultisampleFBO, rt->numSamples(), 
+                    rt->dimensions().width(),
+                    rt->dimensions().height() );
+    
     fCachedOpsRenderPass->set(rt, useMultisampleFBO, bounds, origin, colorInfo, stencilInfo);
     return fCachedOpsRenderPass.get();
 }
@@ -2473,10 +2487,15 @@ GrOpsRenderPass* GrGLGpu::onGetOpsRenderPass(
 void GrGLGpu::flushRenderTarget(GrGLRenderTarget* target, bool useMultisampleFBO) {
     SkASSERT(target);
     GrGpuResource::UniqueID rtID = target->uniqueID();
+    SkDebugf("LLLL - GrGLGpu::flushRenderTarget - bound id: %u, fHWBoundFramebufferIsMSAA: %s\n",
+             fHWBoundRenderTargetUniqueID.asUInt(),
+             fHWBoundFramebufferIsMSAA?"enable":"disable");
     if (fHWBoundRenderTargetUniqueID != rtID           ||
         fHWBoundFramebufferIsMSAA != useMultisampleFBO ||
         target->mustRebind(useMultisampleFBO)) {
         target->bind(useMultisampleFBO);
+        SkDebugf("GrGLGpu::flushRenderTarget - rebind to - id: %u, useMultisampleFBO: %s",
+                  rtID.asUInt(), useMultisampleFBO?"enable":"disable");
 #ifdef SK_DEBUG
         // don't do this check in Chromium -- this is causing
         // lots of repeated command buffer flushes when the compositor is

@@ -148,6 +148,7 @@ public:
     }
 
     const char* name() const override { return "SmallPathOp"; }
+    GrAAType aaType() const override { return fHelper.aaType(); }
 
     void visitProxies(const GrVisitProxyFunc& func) const override {
         fHelper.visitProxies(func);

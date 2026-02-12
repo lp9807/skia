@@ -163,6 +163,20 @@ ContextInfo GrContextFactory::getContextInfoInternal(ContextType type, ContextOv
 
     std::unique_ptr<TestContext> testCtx;
     GrBackendApi backend = skgpu::ganesh::ContextTypeBackend(type);
+
+    static const char* backendDescString[] = {
+        "kOpenGL",
+        "kVulkan",
+        "kMetal",
+        "kDirect3D",
+        "kMock",
+        "kUnsupported",
+    };
+
+    SkDebugf("LLLL - GrContextFactory::getContextInfoInternal: nothing found, to create new backend - %s\n",
+        backendDescString[static_cast<size_t>(backend)]
+    );
+
     switch (backend) {
 #ifdef SK_GL
         case GrBackendApi::kOpenGL: {
@@ -171,9 +185,11 @@ ContextInfo GrContextFactory::getContextInfoInternal(ContextType type, ContextOv
             GLTestContext* glCtx;
             switch (type) {
                 case ContextType::kGL:
+                    SkDebugf("LLLL - GrContextFactory - create OpenGL - kGL_GrGLStandard\n");
                     glCtx = CreatePlatformGLTestContext(kGL_GrGLStandard, glShareContext);
                     break;
                 case ContextType::kGLES:
+                    SkDebugf("LLLL - GrContextFactory - create OpenGL - kGLES_GrGLStandard\n");
                     glCtx = CreatePlatformGLTestContext(kGLES_GrGLStandard, glShareContext);
                     break;
 #if SK_ANGLE
@@ -235,6 +251,7 @@ ContextInfo GrContextFactory::getContextInfoInternal(ContextType type, ContextOv
             VkTestContext* vkSharedContext = primaryContext
                     ? static_cast<VkTestContext*>(primaryContext->fTestContext) : nullptr;
             SkASSERT(ContextType::kVulkan == type);
+            SkDebugf("LLLL - GrContextFactory - create Vulkan from %p\n", vkSharedContext);
             testCtx.reset(CreatePlatformVkTestContext(vkSharedContext));
             if (!testCtx) {
                 return ContextInfo();
@@ -312,6 +329,8 @@ ContextInfo GrContextFactory::getContextInfoInternal(ContextType type, ContextOv
     if (shareContext) {
         SkASSERT(grCtx->directContextID() != shareContext->directContextID());
     }
+
+    SkDebugf("LLLL - GrContextFactory::getContextInfoInternal: create backend successfully\n");
 
     // We must always add new contexts by pushing to the back so that when we delete them we delete
     // them in reverse order in which they were made.

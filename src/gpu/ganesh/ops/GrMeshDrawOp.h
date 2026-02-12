@@ -41,6 +41,8 @@ public:
                (aa1 == GrAAType::kCoverage && aa2 == GrAAType::kNone);
     }
 
+    GrAAType aaType() const override { return GrDrawOp::aaType(); }
+
 protected:
     GrMeshDrawOp(uint32_t classID);
 

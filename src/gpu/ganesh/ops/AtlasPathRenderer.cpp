@@ -320,6 +320,8 @@ bool AtlasPathRenderer::onDrawPath(const DrawPathArgs& args) {
     SkPath path;
     args.fShape->asPath(&path);
 
+    SkDebugf("LLLL - AtlasPathRenderer::onDrawPath - 0x%p\n", (void*)this);
+
     const SkRect pathDevBounds = args.fViewMatrix->mapRect(args.fShape->bounds());
     SkASSERT(this->pathFitsInAtlas(pathDevBounds, args.fAAType));
 

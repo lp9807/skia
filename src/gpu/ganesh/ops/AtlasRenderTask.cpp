@@ -91,6 +91,8 @@ GrRenderTask::ExpectedOutcome AtlasRenderTask::onMakeClosed(GrRecordingContext* 
     this->target(0)->asRenderTargetProxy()->setNeedsStencil();
     SkRect drawRect = target(0)->getBoundsRect();
 
+    SkDebugf("LLLL - AtlasRenderTask::onMakeClosed - 0x%p, dim: %dx%d\n", (void*)this, drawRect.width(), drawRect.height());
+
     // Clear the atlas.
     if (caps.performColorClearsAsDraws() || caps.performStencilClearsAsDraws()) {
         this->setColorLoadOp(GrLoadOp::kDiscard);

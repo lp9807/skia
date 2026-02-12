@@ -1637,6 +1637,24 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
     PathAtlas* pathAtlas = nullptr;
     AtlasProvider* atlasProvider = fRecorder->priv().atlasProvider();
 
+    static const char* strategyStr[] = {
+        "Default", "ComputeAnalyticAA", "ComputeMSAA16", "ComputeMSAA8", "RasterAA", "Tessellation"
+    };
+    static const char* strokeStyleStr[] = {
+        "kHairline_Style",
+        "kFill_Style",
+        "kStroke_Style",
+        "kStrokeAndFill_Style"
+    };
+
+    SkDebugf("LLLL - graphite::Device::chooseRenderer - select path renderer - \ncompute available: %s, strategy: %s, requireMSAA: %s, fMSAASupported: %s, stroke style: %s\n", 
+        atlasProvider->isAvailable(AtlasProvider::PathAtlasFlags::kCompute) ? "yes" : "no",
+        strategyStr[static_cast<size_t>(strategy)],
+        requireMSAA ? "yes" : "no",
+        fMSAASupported ? "yes" : "no",
+        strokeStyleStr[static_cast<size_t>(type)]
+    );
+
     // Prefer compute atlas draws if supported. This currently implicitly filters out clip draws as
     // they require MSAA. Eventually we may want to route clip shapes to the atlas as well but not
     // if hardware MSAA is required.
@@ -1671,6 +1689,8 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
     if (!requireMSAA && pathAtlas) {
         // If we got here it means that we should draw with an atlas renderer if we can and avoid
         // resorting to one of the tessellating techniques.
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - select atlas %s\n",
+                 pathAtlas == atlasProvider->getRasterPathAtlas() ? "Raster" : "Compute" );
         return {nullptr, pathAtlas};
     }
 
@@ -1691,6 +1711,7 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
         // stenciling first with the HW stroke tessellator and then covering their bounds, but
         // inverse-filled strokes are not well-specified in our public canvas behavior so we may be
         // able to remove it.
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - select tessellatedStrokes\n");
         return {renderers->tessellatedStrokes(), nullptr};
     }
 
@@ -1699,6 +1720,7 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
     if (shape.convex() && !shape.inverted()) {
         // TODO: Ganesh doesn't have a curve+middle-out triangles option for convex paths, but it
         // would be pretty trivial to spin up.
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - select convexTessellatedWedges\n");
         return {renderers->convexTessellatedWedges(), nullptr};
     } else {
         if (!drawBounds.has_value()) {
@@ -1717,8 +1739,14 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
                 drawBounds->area() <= (256 * 256);
 
         if (preferWedges) {
+            SkDebugf("LLLL - graphite::Device::chooseRenderer - select stencilTessellatedWedges, bound: %dx%d, shape bound: %fx%f\n",
+                drawBounds->size().x(), drawBounds->size().y(), 
+                shape.bounds().size().x(), shape.bounds().size().y());
             return {renderers->stencilTessellatedWedges(shape.fillType()), nullptr};
         } else {
+            SkDebugf("LLLL - graphite::Device::chooseRenderer - select stencilTessellatedCurvesAndTris, bound: %dx%d, shape bound: %fx%f\n", 
+                drawBounds->size().x(), drawBounds->size().y(), 
+                shape.bounds().size().x(), shape.bounds().size().y());
             return {renderers->stencilTessellatedCurvesAndTris(shape.fillType()), nullptr};
         }
     }

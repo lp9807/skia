@@ -308,6 +308,13 @@ GrOpsRenderPass* GrVkGpu::onGetOpsRenderPass(
     // is compatible, but that is part of the framebuffer that we get here.
     GrVkRenderTarget* vkRT = static_cast<GrVkRenderTarget*>(rt);
 
+    SkDebugf("LLLL - GrVkGpu::onGetOpsRenderPass - useMSAASurface: %s, sample count: %d, supportDiscardableMSAAForDMSAA: %s, current dim: %dx%d.\n", 
+        useMSAASurface?"yes":"no",
+        rt->numSamples(),
+        this->vkCaps().supportsDiscardableMSAAForDMSAA() ? "yes" : "no",
+        rt->dimensions().width(),
+        rt->dimensions().height() );
+
     SkASSERT(!useMSAASurface ||
              rt->numSamples() > 1 ||
              (this->vkCaps().supportsDiscardableMSAAForDMSAA() &&
@@ -341,6 +348,15 @@ GrOpsRenderPass* GrVkGpu::onGetOpsRenderPass(
             resolveInfo.fLoadOp = GrLoadOp::kDiscard;
         }
     }
+
+    SkDebugf("LLLL - GrVkGpu::onGetOpsRenderPass - getFramebuffer - secondaryCommandBuffer: %s, "
+             "withResolve: %s, withStencil: %s, selfDepFlags: 0x%x, loadFromResolve: %s\n",
+             vkRT->wrapsSecondaryCommandBuffer() ? "yes" : "no",
+             withResolve ? "yes" : "no",
+             SkToBool(stencil) ? "yes" : "no",
+             selfDepFlags,
+             SkToBool(loadFromResolve) ? "Load" : "No" 
+    );
 
     // Get the framebuffer to use for the render pass
    sk_sp<GrVkFramebuffer> framebuffer;

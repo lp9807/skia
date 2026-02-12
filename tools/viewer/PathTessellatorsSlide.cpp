@@ -61,6 +61,8 @@ private:
         this->setBounds(drawBounds, HasAABloat::kNo, IsHairline::kNo);
     }
     const char* name() const override { return "SamplePathTessellatorOp"; }
+    GrAAType aaType() const override { return GrAAType::kMSAA; }
+
     void visitProxies(const GrVisitProxyFunc&) const override {}
     FixedFunctionFlags fixedFunctionFlags() const override {
         return FixedFunctionFlags::kUsesHWAA;
