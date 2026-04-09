@@ -1331,6 +1331,11 @@ void Device::drawGeometry(const Transform& localToDevice,
     const int numNewRenderSteps = (renderer ? renderer->numRenderSteps() : 1) +
                                   (secondaryRenderer ? secondaryRenderer->numRenderSteps() : 0);
 
+    // TODO_luop: mimic the logic of path atlas for msaa-enabled path shape.
+    //  - #1. create fake msaa atlas instead to test the performance.
+    //  - #2. port Ganesh path atlas
+    //  - #3. integrate compute path atlas
+    
     // Decide if we have any reason to flush pending work. We want to flush before updating the clip
     // state or making any permanent changes to a path atlas, since otherwise clip operations and/or
     // atlas entries for the current draw will be flushed.

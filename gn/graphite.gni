@@ -72,6 +72,8 @@ skia_graphite_sources = [
   "$_src/DrawTypes.h",
   "$_src/DrawWriter.cpp",
   "$_src/DrawWriter.h",
+  "$_src/FakeGpuPathAtlas.cpp",
+  "$_src/FakeGpuPathAtlas.h",
   "$_src/GlobalCache.cpp",
   "$_src/GlobalCache.h",
   "$_src/GpuWorkSubmission.cpp",
