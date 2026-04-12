@@ -162,7 +162,8 @@ bool SkCanvasPriv::ImageToColorFilter(SkPaint* paint) {
 AutoLayerForImageFilter::AutoLayerForImageFilter(SkCanvas* canvas,
                                                  const SkPaint& paint,
                                                  const SkRect* rawBounds,
-                                                 bool skipMaskFilterLayer)
+                                                 bool skipMaskFilterLayer,
+                                                 bool ensureCoverageMaskLayer )
             : fPaint(paint)
             , fCanvas(canvas)
             , fTempLayersForFilters(0) {
@@ -191,6 +192,10 @@ AutoLayerForImageFilter::AutoLayerForImageFilter(SkCanvas* canvas,
    // internal layers and perform two restores when finished. This actually creates one fewer
    // offscreen passes compared to directly composing the mask filter's output with an
    // SkImageFilters::Shader node and passing that into the rest of the image filter.
+
+    if( ensureCoverageMaskLayer && fTempLayersForFilters == 0 ) {
+        this->addCoverageMaskLayer(rawBounds);
+    }
 }
 
 AutoLayerForImageFilter::~AutoLayerForImageFilter() {
@@ -238,6 +243,32 @@ void AutoLayerForImageFilter::addImageFilterLayer(const SkRect* drawBounds) {
     this->addLayer(restorePaint, drawBounds, /*coverageOnly=*/false);
 }
 
+namespace {
+
+void modifyPaintForDrawCoverageMask(SkPaint& srcPaint, SkPaint& dstPaint)
+{
+    // The restore paint for the coverage layer takes over all shading effects that had been on the
+    // original paint, which will be applied to the alpha-only output image from the mask filter
+    // converted to an image filter.
+    dstPaint.setColor4f(srcPaint.getColor4f());
+    dstPaint.setShader(srcPaint.refShader());
+    dstPaint.setColorFilter(srcPaint.refColorFilter());
+    dstPaint.setBlender(srcPaint.refBlender());
+    dstPaint.setDither(srcPaint.isDither());
+
+    // Remove all shading effects from the "working" paint so that the layer's alpha channel
+    // will correspond to the coverage. This leaves the original style and AA settings that
+    // contribute to coverage (including any path effect).
+    srcPaint.setColor4f(SkColors::kWhite);
+    srcPaint.setShader(nullptr);
+    srcPaint.setColorFilter(nullptr);
+    srcPaint.setMaskFilter(nullptr);
+    srcPaint.setDither(false);
+    srcPaint.setBlendMode(SkBlendMode::kSrcOver);
+}
+
+}
+
 void AutoLayerForImageFilter::addMaskFilterLayer(const SkRect* drawBounds) {
     // Shouldn't be adding a layer if there was no mask filter to begin with.
     SkASSERT(fPaint.getMaskFilter());
@@ -256,29 +287,21 @@ void AutoLayerForImageFilter::addMaskFilterLayer(const SkRect* drawBounds) {
         return;
     }
 
-    // The restore paint for the coverage layer takes over all shading effects that had been on the
-    // original paint, which will be applied to the alpha-only output image from the mask filter
-    // converted to an image filter.
     SkPaint restorePaint;
-    restorePaint.setColor4f(fPaint.getColor4f());
-    restorePaint.setShader(fPaint.refShader());
-    restorePaint.setColorFilter(fPaint.refColorFilter());
-    restorePaint.setBlender(fPaint.refBlender());
-    restorePaint.setDither(fPaint.isDither());
     restorePaint.setImageFilter(maskFilterAsImageFilter);
-
-    // Remove all shading effects from the "working" paint so that the layer's alpha channel
-    // will correspond to the coverage. This leaves the original style and AA settings that
-    // contribute to coverage (including any path effect).
-    fPaint.setColor4f(SkColors::kWhite);
-    fPaint.setShader(nullptr);
-    fPaint.setColorFilter(nullptr);
-    fPaint.setMaskFilter(nullptr);
-    fPaint.setDither(false);
-    fPaint.setBlendMode(SkBlendMode::kSrcOver);
-
+    modifyPaintForDrawCoverageMask(fPaint, restorePaint);
     this->addLayer(restorePaint, drawBounds, /*coverageOnly=*/true);
 }
+
+void AutoLayerForImageFilter::addCoverageMaskLayer(const SkRect* drawBounds) {
+    
+    SkDebugf("LLLL - AutoLayerForImageFilter::addCoverageMaskLayer\n");
+    
+    SkPaint restorePaint;
+    modifyPaintForDrawCoverageMask(fPaint, restorePaint);
+    this->addLayer(restorePaint, drawBounds, /*coverageOnly=*/true);
+}
+
 
 void AutoLayerForImageFilter::addLayer(const SkPaint& restorePaint,
                                        const SkRect* drawBounds,

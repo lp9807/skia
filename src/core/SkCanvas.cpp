@@ -273,8 +273,10 @@ std::optional<AutoLayerForImageFilter> SkCanvas::aboutToDraw(
     // TODO: Eventually all devices will use this code path and this will just test 'flags'.
     const bool skipMaskFilterLayer = (flags & PredrawFlags::kSkipMaskFilterAutoLayer) ||
                                      !this->topDevice()->useDrawCoverageMaskForMaskFilters();
+    const bool ensureMaskLayer = bool(flags & PredrawFlags::kEnsureMaskAutoLayer) &&
+                                 this->topDevice()->useDrawCoverageMaskForPath();
     return std::optional<AutoLayerForImageFilter>(
-            std::in_place, this, paint, rawBounds, skipMaskFilterLayer);
+            std::in_place, this, paint, rawBounds, skipMaskFilterLayer, ensureMaskLayer);
 }
 
 std::optional<AutoLayerForImageFilter> SkCanvas::aboutToDraw(
@@ -1182,7 +1184,7 @@ void SkCanvas::internalRestore() {
         // internalSaveLayer and internalRestore.
         if (this->predrawNotify()) {
             SkDevice* dstDev = this->topDevice();
-            if (!layer->fImageFilters.empty()) {
+            if (!layer->fImageFilters.empty() || layer->fDevice->useDrawCoverageMaskForPath() ) {
                 auto compat = layer->fIncludesPadding ? DeviceCompatibleWithFilter::kYesWithPadding
                                                       : DeviceCompatibleWithFilter::kYes;
                 this->internalDrawDeviceWithFilter(layer->fDevice.get(), // src
@@ -2180,6 +2182,7 @@ void SkCanvas::onDrawPath(const SkPath& path, const SkPaint& paint) {
     }
 
     auto layer = this->aboutToDraw(paint, path.isInverseFillType() ? nullptr : &pathBounds);
+                                   //PredrawFlags::kEnsureMaskAutoLayer);
     if (layer) {
         this->topDevice()->drawPath(path, layer->paint());
     }

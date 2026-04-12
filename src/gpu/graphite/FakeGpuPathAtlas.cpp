@@ -35,10 +35,6 @@ constexpr uint16_t kGpuAtlasDim = 512;
 // dispatches to render multiple atlas pages can be prohibitive.
 constexpr size_t kBboxAreaThreshold = 1024 * 512;
 
-// Coordinate size that is too large for vello to handle efficiently. See the discussion on
-// https://github.com/linebender/vello/pull/542.
-constexpr float kCoordinateThreshold = 1e10;
-
 }  // namespace
 
 FakeGpuPathAtlas::FakeGpuPathAtlas(Recorder* recorder)
@@ -76,28 +72,58 @@ bool FakeGpuPathAtlas::isSuitableForAtlasing(const Rect& transformedShapeBounds,
         return false;
     }
 
-    // Reject pathological shapes that vello can't handle efficiently yet.
-    skvx::float2 unclippedSize = shapeBounds.size();
-    if (std::fabs(unclippedSize.x()) > kCoordinateThreshold ||
-        std::fabs(unclippedSize.y()) > kCoordinateThreshold) {
-        return false;
-    }
-
     return true;
 }
 
-const TextureProxy* FakeGpuPathAtlas::onAddShape(const Shape&,
-                               const Transform&,
-                               const SkStrokeRec&,
+const TextureProxy* FakeGpuPathAtlas::onAddShape(const Shape& shape,
+                               const Transform& transform,
+                               const SkStrokeRec& style,
                                skvx::half2 maskSize,
                                skvx::half2* outPos) {
-    return nullptr;
+    skgpu::UniqueKey maskKey;
+    bool hasKey = shape.hasKey();
+    /*if (hasKey) {
+        // Try to locate or add to cached DrawAtlas
+        const TextureProxy* proxy = fCachedAtlasMgr.findOrCreateEntry(fRecorder,
+                                                                      shape,
+                                                                      transform,
+                                                                      style,
+                                                                      maskSize,
+                                                                      outPos);
+        if (proxy) {
+            return proxy;
+        }
+    }*/
+
+    // Try to add to uncached texture
+    SkIPoint16 iPos;
+    const TextureProxy* texProxy = this->addRect(maskSize, &iPos);
+    if (!texProxy) {
+        return nullptr;
+    }
+    *outPos = skvx::half2(iPos.x(), iPos.y());
+    // If the mask is empty, just return.
+    // TODO: This may not be needed if we can handle clipped out bounds with inverse fills
+    // another way. See PathAtlas::addShape().
+    if (!all(maskSize)) {
+        return texProxy;
+    }
+
+    // TODO: The compute renderer doesn't support perspective yet. We assume that the path has been
+    // appropriately transformed in that case.
+    SkASSERT(transform.type() != Transform::Type::kPerspective);
+
+    // Restrict the render to the occupied area of the atlas, including entry padding so that the
+    // padded row/column is cleared when Vello renders.
+    Rect atlasBounds = Rect::XYWH(skvx::float2(iPos.x(), iPos.y()), skvx::cast<float>(maskSize));
+
+    return texProxy;
 }
 
 const TextureProxy* FakeGpuPathAtlas::addRect(skvx::half2 maskSize,
                                               SkIPoint16* outPos) {
     if (!this->initializeTextureIfNeeded()) {
-        SKGPU_LOG_E("Failed to instantiate an atlas texture");
+        SKGPU_LOG_E("LLLL - FakeGpuPathAtlas::addRect - Failed to instantiate an atlas texture");
         return nullptr;
     }
 

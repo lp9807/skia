@@ -1539,6 +1539,7 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
     SkStrokeRec::Style type = style.getStyle();
 
     if (geometry.isSubRun()) {
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - sdf selected.\n");
         SkASSERT(!requireMSAA);
         sktext::gpu::RendererData rendererData = geometry.subRunData().rendererData();
         if (!rendererData.isSDF) {
@@ -1550,16 +1551,19 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
                       geometry.subRunData().pixelGeometry() != kUnknown_SkPixelGeometry;
         return {renderers->sdfText(useLCD), nullptr};
     } else if (geometry.isVertices()) {
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - vertices selected.\n");
         SkVerticesPriv info(geometry.vertices()->priv());
         return {renderers->vertices(info.mode(), info.hasColors(), info.hasTexCoords()), nullptr};
     } else if (geometry.isCoverageMaskShape()) {
         // drawCoverageMask() passes in CoverageMaskShapes that reference a provided texture.
         // The CoverageMask renderer can also be chosen later on if the shape is assigned to
         // to be rendered into the PathAtlas, in which case the 2nd return value is non-null.
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - coverageMask selected.\n");
         return {renderers->coverageMask(), nullptr};
     } else if (geometry.isEdgeAAQuad()) {
         SkASSERT(!requireMSAA && style.isFillStyle());
         // handled by specialized system, simplified from rects and round rects
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - (aa)EdgeBound selected.\n");
         const EdgeAAQuad& quad = geometry.edgeAAQuad();
         if (quad.isRect() && quad.edgeFlags() == EdgeAAQuad::Flags::kNone) {
             // For non-AA rectangular quads, it can always use a coverage-less renderer; there's no
@@ -1570,8 +1574,10 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
             return {renderers->perEdgeAAQuad(), nullptr};
         }
     } else if (geometry.isAnalyticBlur()) {
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - analyticBlur selected.\n");
         return {renderers->analyticBlur(), nullptr};
     } else if (!geometry.isShape()) {
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - nullptr selected.\n");
         // We must account for new Geometry types with specific Renderers
         return {nullptr, nullptr};
     }
@@ -1579,6 +1585,7 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
     const Shape& shape = geometry.shape();
     // We can't use this renderer if we require MSAA for an effect (i.e. clipping or stroke+fill).
     if (!requireMSAA && is_simple_shape(shape, type)) {
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - nonAA Analytic selected.\n");
         // For pixel-aligned rects, use the the non-AA bounds renderer to avoid triggering any
         // dst-read requirement due to src blending.
         bool pixelAlignedRect = false;
@@ -1694,7 +1701,7 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
     if (!requireMSAA && pathAtlas) {
         // If we got here it means that we should draw with an atlas renderer if we can and avoid
         // resorting to one of the tessellating techniques.
-        SkDebugf("LLLL - graphite::Device::chooseRenderer - select atlas %s\n",
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - %s atlas selected\n",
                  pathAtlas == atlasProvider->getRasterPathAtlas() ? "Raster" : "Compute" );
         return {nullptr, pathAtlas};
     }
@@ -1716,7 +1723,7 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
         // stenciling first with the HW stroke tessellator and then covering their bounds, but
         // inverse-filled strokes are not well-specified in our public canvas behavior so we may be
         // able to remove it.
-        SkDebugf("LLLL - graphite::Device::chooseRenderer - select tessellatedStrokes\n");
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - tessellatedStrokes selected.\n");
         return {renderers->tessellatedStrokes(), nullptr};
     }
 
@@ -1725,7 +1732,7 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
     if (shape.convex() && !shape.inverted()) {
         // TODO: Ganesh doesn't have a curve+middle-out triangles option for convex paths, but it
         // would be pretty trivial to spin up.
-        SkDebugf("LLLL - graphite::Device::chooseRenderer - select convexTessellatedWedges\n");
+        SkDebugf("LLLL - graphite::Device::chooseRenderer - convexTessellatedWedges selected.\n");
         return {renderers->convexTessellatedWedges(), nullptr};
     } else {
         if (!drawBounds.has_value()) {
@@ -1744,13 +1751,13 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
                 drawBounds->area() <= (256 * 256);
 
         if (preferWedges) {
-            SkDebugf("LLLL - graphite::Device::chooseRenderer - select stencilTessellatedWedges, bound: %dx%d, shape bound: %fx%f\n",
-                drawBounds->size().x(), drawBounds->size().y(), 
+            SkDebugf("LLLL - graphite::Device::chooseRenderer - stencilTessellatedWedges selected, bound: %fx%f, shape bound: %fx%f\n",
+                drawBounds->size().x(), drawBounds->size().y(),
                 shape.bounds().size().x(), shape.bounds().size().y());
             return {renderers->stencilTessellatedWedges(shape.fillType()), nullptr};
         } else {
-            SkDebugf("LLLL - graphite::Device::chooseRenderer - select stencilTessellatedCurvesAndTris, bound: %dx%d, shape bound: %fx%f\n", 
-                drawBounds->size().x(), drawBounds->size().y(), 
+            SkDebugf("LLLL - graphite::Device::chooseRenderer - stencilTessellatedCurvesAndTris selected, bound: %fx%f, shape bound: %fx%f\n",
+                drawBounds->size().x(), drawBounds->size().y(),
                 shape.bounds().size().x(), shape.bounds().size().y());
             return {renderers->stencilTessellatedCurvesAndTris(shape.fillType()), nullptr};
         }

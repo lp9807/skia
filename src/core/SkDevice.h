@@ -274,6 +274,7 @@ public:
     // color type. Eventually this will be the only way that mask filters are handled (barring
     // dedicated fast-paths for blurs on [r]rects and text).
     virtual bool useDrawCoverageMaskForMaskFilters() const { return false; }
+    virtual bool useDrawCoverageMaskForPath() const { return false; }
 
     // SkCanvas uses NoPixelsDevice when createDevice fails; but then it needs to be able to
     // inspect a layer's device to know if calling drawDevice() later is allowed.

@@ -2407,6 +2407,7 @@ private:
         kNonOpaqueShaderOverride = 2, // The paint's shader is overridden but is not opaque
         kCheckForOverwrite       = 4, // Check if the draw would overwrite the entire surface
         kSkipMaskFilterAutoLayer = 8, // Do not apply mask filters in the AutoLayer
+        kEnsureMaskAutoLayer     = 16,
     };
     // Inlined SK_DECL_BITMASK_OPS_FRIENDS to avoid including SkEnumBitMask.h
     friend constexpr SkEnumBitMask<PredrawFlags> operator|(PredrawFlags, PredrawFlags);

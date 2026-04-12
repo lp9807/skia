@@ -139,7 +139,8 @@ public:
     AutoLayerForImageFilter(SkCanvas* canvas,
                             const SkPaint& paint,
                             const SkRect* rawBounds,
-                            bool skipMaskFilterLayer);
+                            bool skipMaskFilterLayer,
+                            bool ensureMaskLayer = false);
 
     AutoLayerForImageFilter(const AutoLayerForImageFilter&) = delete;
     AutoLayerForImageFilter& operator=(const AutoLayerForImageFilter&) = delete;
@@ -156,6 +157,7 @@ public:
 
 private:
     void addImageFilterLayer(const SkRect* drawBounds);
+    void addCoverageMaskLayer(const SkRect* drawBounds);
 
     void addLayer(const SkPaint& restorePaint, const SkRect* drawBounds, bool coverageOnly);
 

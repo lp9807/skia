@@ -113,6 +113,7 @@ public:
     sk_sp<Task> lastDrawTask() const;
 
     bool useDrawCoverageMaskForMaskFilters() const override { return true; }
+    bool useDrawCoverageMaskForPath() const override { return true; }
 
     // Clipping
     void pushClipStack() override { fClip.save(); }
