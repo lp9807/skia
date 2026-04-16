@@ -21,6 +21,9 @@
 
 namespace skgpu::graphite {
 
+class Device;
+class DrawList;
+
 /**
  * Base class for PathAtlas implementations that rasterize coverage masks on the GPU using compute
  * shaders.
@@ -53,7 +56,34 @@ private:
                                    const SkStrokeRec&,
                                    skvx::half2 maskSize,
                                    skvx::half2* outPos) override;
+    
+    class GpuAtlasMgr : public PathAtlas::DrawAtlasMgr {
+    public:
+        GpuAtlasMgr(size_t width, size_t height, const Caps* caps)
+            : PathAtlas::DrawAtlasMgr(width, height, width, height,
+                                      DrawAtlas::UseStorageTextures::kYes,
+                                      /*label=*/"FakeGpuPathAtlas", caps) {}
 
+        void onReset() {
+            fDrawAtlas->markUsedPlotsAsFull();
+            for (int i = 0; i < PlotLocator::kMaxMultitexturePages; ++i) {
+                fOccupiedAreas[i] = {0, 0};
+            }
+        }
+
+    protected:
+        bool onAddToAtlas(const Shape&,
+                          const Transform& transform,
+                          const SkStrokeRec&,
+                          SkIRect shapeBounds,
+                          const AtlasLocator&) override;
+
+    private:
+        SkISize fOccupiedAreas[PlotLocator::kMaxMultitexturePages] = {
+            {0, 0}, {0, 0}, {0, 0}, {0, 0}
+        };
+    };
+        
     //////////////////
     // Uncached data
 
@@ -62,6 +92,11 @@ private:
     // this texture is stored here, which is used by AtlasShapeRenderStep when encoding the render
     // pass.
     sk_sp<TextureProxy> fTexture;
+    sk_sp<Device> fTargetDevice;
+    std::unique_ptr<DrawList> fCachedAtlasDraws;
+    
+    skgpu::RectanizerSkyline fRectanizer;
+    GpuAtlasMgr fCachedAtlasMgr;
 };
 
 }  // namespace skgpu::graphite

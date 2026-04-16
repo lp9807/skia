@@ -11,6 +11,8 @@
 #include "src/core/SkTraceEvent.h"
 #include "src/gpu/graphite/AtlasProvider.h"
 #include "src/gpu/graphite/Caps.h"
+#include "src/gpu/graphite/Device.h"
+#include "src/gpu/graphite/DrawList.h"
 #include "src/gpu/graphite/Log.h"
 #include "src/gpu/graphite/RasterPathUtils.h"
 #include "src/gpu/graphite/RecorderPriv.h"
@@ -26,7 +28,6 @@
 namespace skgpu::graphite {
 namespace {
 
-// TODO: This is the maximum target dimension that vello can handle today.
 constexpr uint16_t kGpuAtlasDim = 512;
 
 // TODO: Currently we reject shapes that are smaller than a subset of a given atlas page to avoid
@@ -38,18 +39,24 @@ constexpr size_t kBboxAreaThreshold = 1024 * 512;
 }  // namespace
 
 FakeGpuPathAtlas::FakeGpuPathAtlas(Recorder* recorder)
-    : PathAtlas(recorder, kGpuAtlasDim, kGpuAtlasDim)
+    : PathAtlas(recorder, kGpuAtlasDim, kGpuAtlasDim),
+      fRectanizer(fWidth, fHeight),
+      fCachedAtlasMgr(fWidth, fHeight, recorder->priv().caps())
     {}
 
 bool FakeGpuPathAtlas::initializeTextureIfNeeded() {
     if (!fTexture) {
         SkColorType targetCT = ComputeShaderCoverageMaskTargetFormat(fRecorder->priv().caps());
         fTexture = fRecorder->priv().atlasProvider()->getAtlasTexture(fRecorder,
-                                                                      this->width(),
-                                                                      this->height(),
+                                                                      fWidth,
+                                                                      fHeight,
                                                                       targetCT,
                                                                       /*identifier=*/0,
                                                                       /*requireStorageUsage=*/true);
+        
+        SkColorInfo info(targetCT, kPremul_SkAlphaType, nullptr);
+        fTargetDevice = Device::Make(fRecorder, fTexture,
+                                     fTexture->dimensions(), info, {}, LoadOp::kDiscard );
     }
     return fTexture != nullptr;
 }
@@ -61,7 +68,7 @@ bool FakeGpuPathAtlas::isSuitableForAtlasing(const Rect& transformedShapeBounds,
     skvx::float2 maskSize = maskBounds.size();
     float width = maskSize.x(), height = maskSize.y();
 
-    if (width > this->width() || height > this->height()) {
+    if (width > fWidth || height > fHeight) {
         return false;
     }
 
@@ -82,7 +89,7 @@ const TextureProxy* FakeGpuPathAtlas::onAddShape(const Shape& shape,
                                skvx::half2* outPos) {
     skgpu::UniqueKey maskKey;
     bool hasKey = shape.hasKey();
-    /*if (hasKey) {
+    if (hasKey) {
         // Try to locate or add to cached DrawAtlas
         const TextureProxy* proxy = fCachedAtlasMgr.findOrCreateEntry(fRecorder,
                                                                       shape,
@@ -93,7 +100,7 @@ const TextureProxy* FakeGpuPathAtlas::onAddShape(const Shape& shape,
         if (proxy) {
             return proxy;
         }
-    }*/
+    }
 
     // Try to add to uncached texture
     SkIPoint16 iPos;
@@ -108,14 +115,36 @@ const TextureProxy* FakeGpuPathAtlas::onAddShape(const Shape& shape,
     if (!all(maskSize)) {
         return texProxy;
     }
-
-    // TODO: The compute renderer doesn't support perspective yet. We assume that the path has been
-    // appropriately transformed in that case.
-    SkASSERT(transform.type() != Transform::Type::kPerspective);
-
-    // Restrict the render to the occupied area of the atlas, including entry padding so that the
-    // padded row/column is cleared when Vello renders.
-    Rect atlasBounds = Rect::XYWH(skvx::float2(iPos.x(), iPos.y()), skvx::cast<float>(maskSize));
+    
+    //TODO: -luop: record path rendering into DrawList.
+    
+    // option #1: add draw commands to internal device
+    auto trans = Transform::Translate(outPos->x(), outPos->y());
+    fTargetDevice->drawGeometry(trans, Geometry(shape), SkPaint(), style);
+    
+    // option #2: record directly as DrawList, taking care of draw order and clipping stack.
+    //Rect atlasBounds = Rect::XYWH(skvx::float2(iPos.x(), iPos.y()), skvx::cast<float>(maskSize));
+    // 1. select renderer: Device::chooseRenderer
+    //auto renderer = fRecorder->priv().rendererProvider()->tessellatedStrokes();
+    // 2. transform
+    //auto trans = Transform::Translate(outPos->x(), outPos->y());
+    // 3. clip: add bound to clip
+    //Clip clip;
+    // 4. draw order
+    //DrawOrder order();
+    // 5. PaintParams
+    //PaintParams shading{
+    //    SkPaint(),
+    //    nullptr/*primitiveBlender*/,
+    //    clip.analyticClip(),
+    //    sk_ref_sp(clip.shader()),
+    //    DstReadRequirement::kNone,
+    //    true/*skipColorXform*/
+    //};
+    // 6. stroke(optional)
+    
+    //fCachedAtlasDraws->recordDraw(
+    //    renderer, trans, Geometry(shape), clip, DrawOrder::kNoIntersection, shading, nullptr );
 
     return texProxy;
 }
@@ -135,15 +164,32 @@ const TextureProxy* FakeGpuPathAtlas::addRect(skvx::half2 maskSize,
         return fTexture.get();
     }
 
-    /*if (!fRectanizer.addPaddedRect(maskSize.x(), maskSize.y(), kEntryPadding, outPos)) {
+    if (!fRectanizer.addPaddedRect(maskSize.x(), maskSize.y(), kEntryPadding, outPos)) {
         return nullptr;
-    }*/
+    }
 
     return fTexture.get();
 }
 
 void FakeGpuPathAtlas::reset() {
     //this->onReset();
+}
+
+bool FakeGpuPathAtlas::GpuAtlasMgr::onAddToAtlas(const Shape& shape,
+                                                        const Transform& transform,
+                                                        const SkStrokeRec& style,
+                                                        SkIRect shapeBounds,
+                                                 const AtlasLocator& locator) {
+    uint32_t index = locator.pageIndex();
+    const TextureProxy* texProxy = fDrawAtlas->getProxies()[index].get();
+    if (!texProxy) {
+        return false;
+    }
+    
+    // TODO: -luop: record path rendering into DrawList.
+    // SkIPoint iPos = locator.topLeft();
+    // Rect atlasBounds = Rect::XYWH(skvx::float2(iPos.x() + kEntryPadding, iPos.y() + kEntryPadding),
+    //                              skvx::float2(shapeBounds.width(), shapeBounds.height()));
 }
 
 }  // namespace skgpu::graphite

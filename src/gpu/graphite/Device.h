@@ -327,6 +327,7 @@ private:
 #endif
 
     friend class ClipStack; // for recordDraw
+    friend class FakeGpuPathAtlas; // for drawGeometry
 };
 
 SK_MAKE_BITMASK_OPS(Device::DrawFlags)
