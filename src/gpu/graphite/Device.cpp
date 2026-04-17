@@ -23,6 +23,7 @@
 #include "src/gpu/graphite/DrawContext.h"
 #include "src/gpu/graphite/DrawList.h"
 #include "src/gpu/graphite/DrawParams.h"
+#include "src/gpu/graphite/FakeGpuPathAtlas.h"
 #include "src/gpu/graphite/Image_Graphite.h"
 #include "src/gpu/graphite/Log.h"
 #include "src/gpu/graphite/PathAtlas.h"
@@ -1666,6 +1667,15 @@ std::pair<const Renderer*, PathAtlas*> Device::chooseRenderer(const Transform& l
     // they require MSAA. Eventually we may want to route clip shapes to the atlas as well but not
     // if hardware MSAA is required.
     std::optional<Rect> drawBounds;
+    if(atlasProvider->isAvailable(AtlasProvider::PathAtlasFlags::kGPU)) {
+        PathAtlas* atlas = atlasProvider->getGpuPathAtlas();
+        SkASSERT(atlas);
+        
+        drawBounds = localToDevice.mapRect(shape.bounds());
+        if (atlas->isSuitableForAtlasing(*drawBounds, fClip.conservativeBounds())) {
+            pathAtlas = atlas;
+        }
+    }
     if (atlasProvider->isAvailable(AtlasProvider::PathAtlasFlags::kCompute) &&
         use_compute_atlas_when_available(strategy)) {
         PathAtlas* atlas = fDC->getComputePathAtlas(fRecorder);
@@ -1829,6 +1839,8 @@ void Device::flushPendingWorkToRecorder() {
 void Device::internalFlush() {
     TRACE_EVENT0("skia.gpu", TRACE_FUNC);
     ASSERT_SINGLE_OWNER
+    
+    fRecorder->priv().atlasProvider()->recordPendingDraws(fRecorder);
 
     // Push any pending uploads from the atlas provider that pending draws reference.
     fRecorder->priv().atlasProvider()->recordUploads(fDC.get());

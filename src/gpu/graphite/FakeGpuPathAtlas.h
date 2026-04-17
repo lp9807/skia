@@ -35,6 +35,7 @@ class FakeGpuPathAtlas : public PathAtlas {
 public:
     explicit FakeGpuPathAtlas(Recorder*);
     
+    void recordDraws(Recorder* recorder);
     // Clear all scheduled atlas draws and free up atlas allocations, if necessary. After this call
     // the atlas can be considered cleared and available for new shape insertions. However this
     // method does not have any bearing on the contents of any atlas textures themselves, which may
@@ -62,7 +63,7 @@ private:
         GpuAtlasMgr(size_t width, size_t height, const Caps* caps)
             : PathAtlas::DrawAtlasMgr(width, height, width, height,
                                       DrawAtlas::UseStorageTextures::kYes,
-                                      /*label=*/"FakeGpuPathAtlas", caps) {}
+                                      /*label=*/"GpuPathAtlas", caps) {}
 
         void onReset() {
             fDrawAtlas->markUsedPlotsAsFull();

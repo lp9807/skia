@@ -23,6 +23,7 @@ class ComputePathAtlas;
 class DrawContext;
 class PathAtlas;
 class RasterPathAtlas;
+class FakeGpuPathAtlas;
 class Recorder;
 class TextAtlasManager;
 class TextureProxy;
@@ -38,6 +39,8 @@ public:
         kCompute = 0b001,
         // RasterPathAtlas is supported
         kRaster  = 0b010,
+        // GpuPathAtlas is supported
+        kGPU = 0b100,
     };
     SK_DECL_BITMASK_OPS_FRIENDS(PathAtlasFlags)
     using PathAtlasFlagsBitMask = SkEnumBitMask<PathAtlasFlags>;
@@ -66,6 +69,8 @@ public:
     // Gets the atlas handler that uses the CPU raster pipeline to create coverage masks
     // for path rendering.
     RasterPathAtlas* getRasterPathAtlas() const;
+    
+    FakeGpuPathAtlas* getGpuPathAtlas() const;
 
     // Return a TextureProxy with the given dimensions and color type.
     sk_sp<TextureProxy> getAtlasTexture(
@@ -78,6 +83,9 @@ public:
 
     // Push any pending uploads to atlases onto the draw context
     void recordUploads(DrawContext*);
+    
+    // Push any pending atlas draws to recorder
+    void recordPendingDraws(Recorder* recorder);
 
     // Handle any post-flush work (garbage collection)
     void compact(bool forceCompact);
@@ -99,6 +107,7 @@ private:
     // TODO: We may need a method to generate raster-generated masks in separate threads prior to
     // upload.
     std::unique_ptr<RasterPathAtlas> fRasterPathAtlas;
+    std::unique_ptr<FakeGpuPathAtlas> fGpuPathAtlas;
 
     // Allocated and cached texture proxies shared by all PathAtlas instances. It is possible for
     // the same texture to be bound to multiple DispatchGroups and DrawPasses across flushes. The

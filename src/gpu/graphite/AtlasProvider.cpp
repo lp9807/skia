@@ -9,7 +9,9 @@
 
 #include "include/gpu/graphite/Recorder.h"
 #include "src/gpu/graphite/ComputePathAtlas.h"
+#include "src/gpu/graphite/Device.h"
 #include "src/gpu/graphite/DrawContext.h"
+#include "src/gpu/graphite/FakeGpuPathAtlas.h"
 #include "src/gpu/graphite/Log.h"
 #include "src/gpu/graphite/RasterPathAtlas.h"
 #include "src/gpu/graphite/RecorderPriv.h"
@@ -22,6 +24,9 @@ namespace skgpu::graphite {
 AtlasProvider::PathAtlasFlagsBitMask AtlasProvider::QueryPathAtlasSupport(const Caps* caps) {
     // The raster-backend path atlas is always supported.
     PathAtlasFlagsBitMask flags = PathAtlasFlags::kRaster;
+#if defined(SK_BUILD_FOR_OHOS) || defined _WIN32
+    flags |= PathAtlasFlags::kGPU;
+#endif
     if (RendererProvider::IsVelloRendererSupported(caps)) {
         flags |= PathAtlasFlags::kCompute;
     }
@@ -31,6 +36,7 @@ AtlasProvider::PathAtlasFlagsBitMask AtlasProvider::QueryPathAtlasSupport(const 
 AtlasProvider::AtlasProvider(Recorder* recorder)
         : fTextAtlasManager(std::make_unique<TextAtlasManager>(recorder))
         , fRasterPathAtlas(std::make_unique<RasterPathAtlas>(recorder))
+        , fGpuPathAtlas(std::make_unique<FakeGpuPathAtlas>(recorder))
         , fPathAtlasFlags(QueryPathAtlasSupport(recorder->priv().caps())) {}
 
 std::unique_ptr<ComputePathAtlas> AtlasProvider::createComputePathAtlas(Recorder* recorder) const {
@@ -42,6 +48,10 @@ std::unique_ptr<ComputePathAtlas> AtlasProvider::createComputePathAtlas(Recorder
 
 RasterPathAtlas* AtlasProvider::getRasterPathAtlas() const {
     return fRasterPathAtlas.get();
+}
+
+FakeGpuPathAtlas* AtlasProvider::getGpuPathAtlas() const {
+    return fGpuPathAtlas.get();
 }
 
 sk_sp<TextureProxy> AtlasProvider::getAtlasTexture(Recorder* recorder,
@@ -103,6 +113,12 @@ void AtlasProvider::recordUploads(DrawContext* dc) {
 
     if (fRasterPathAtlas) {
         fRasterPathAtlas->recordUploads(dc);
+    }
+}
+
+void AtlasProvider::recordPendingDraws(Recorder* recorder) {
+    if(fGpuPathAtlas) {
+        fGpuPathAtlas->recordDraws(recorder);
     }
 }
 

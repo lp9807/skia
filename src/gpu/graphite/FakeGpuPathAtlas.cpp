@@ -61,6 +61,12 @@ bool FakeGpuPathAtlas::initializeTextureIfNeeded() {
     return fTexture != nullptr;
 }
 
+void FakeGpuPathAtlas::recordDraws(Recorder* recorder)
+{
+    SkASSERT(recorder == fRecorder);
+    fTargetDevice->flushPendingWorkToRecorder();
+}
+
 bool FakeGpuPathAtlas::isSuitableForAtlasing(const Rect& transformedShapeBounds,
                                              const Rect& clipBounds) const {
     Rect shapeBounds = transformedShapeBounds.makeRoundOut();
@@ -117,7 +123,6 @@ const TextureProxy* FakeGpuPathAtlas::onAddShape(const Shape& shape,
     }
     
     //TODO: -luop: record path rendering into DrawList.
-    
     // option #1: add draw commands to internal device
     auto trans = Transform::Translate(outPos->x(), outPos->y());
     fTargetDevice->drawGeometry(trans, Geometry(shape), SkPaint(), style);
@@ -186,10 +191,13 @@ bool FakeGpuPathAtlas::GpuAtlasMgr::onAddToAtlas(const Shape& shape,
         return false;
     }
     
-    // TODO: -luop: record path rendering into DrawList.
+    // TODO: -luop: record cached atlas to reuse.
     // SkIPoint iPos = locator.topLeft();
     // Rect atlasBounds = Rect::XYWH(skvx::float2(iPos.x() + kEntryPadding, iPos.y() + kEntryPadding),
     //                              skvx::float2(shapeBounds.width(), shapeBounds.height()));
+    // auto trans = Transform::Translate(iPos.x(), iPos.y());
+    //fTargetDevice->drawGeometry(trans, Geometry(shape), SkPaint(), style);
+    return true;
 }
 
 }  // namespace skgpu::graphite
