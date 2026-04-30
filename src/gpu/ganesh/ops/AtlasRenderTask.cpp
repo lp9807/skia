@@ -204,6 +204,7 @@ bool AtlasRenderTask::onExecute(GrOpFlushState* flushState) {
                 GrDynamicAtlas::kTextureOrigin,
                 this->target(0)->backingStoreDimensions().height(),
                 SkIRect::MakeSize(fDynamicAtlas->drawBounds()));
+        SkDebugf("LLLL - AtlasRenderTask::onExecute - resolveRenderTarget - %dx%d\n", nativeRect.width(), nativeRect.height());
         flushState->gpu()->resolveRenderTarget(this->target(0)->peekRenderTarget(), nativeRect);
     }
     return true;

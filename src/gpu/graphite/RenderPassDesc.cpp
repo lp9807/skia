@@ -91,6 +91,7 @@ RenderPassDesc RenderPassDesc::Make(const Caps* caps,
     desc.fClearColor = clearColor;
 
     if (depthStencilFlags != DepthStencilFlags::kNone) {
+        SkStringPrintf("LLLL - RenderPassDesc::Make - create fDepthSetncilAttachment info.\n");
         desc.fDepthStencilAttachment.fTextureInfo = caps->getDefaultDepthStencilTextureInfo(
                 depthStencilFlags, desc.fSampleCount, targetInfo.isProtected());
         // Always clear the depth and stencil to 0 at the start of a DrawPass, but discard at the

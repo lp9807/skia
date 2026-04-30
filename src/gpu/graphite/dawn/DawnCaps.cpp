@@ -197,9 +197,9 @@ bool DawnCaps::isRenderable(wgpu::TextureFormat format, uint32_t sampleCount) co
 }
 
 TextureInfo DawnCaps::getDefaultSampledTextureInfo(SkColorType colorType,
-                                                   Mipmapped mipmapped,
-                                                   Protected,
-                                                   Renderable renderable) const {
+                                                     Mipmapped mipmapped,
+                                                     Protected isProtected,
+                                                     Renderable renderable ) const {
     wgpu::TextureUsage usage = wgpu::TextureUsage::TextureBinding |
                                wgpu::TextureUsage::CopyDst |
                                wgpu::TextureUsage::CopySrc;
@@ -502,6 +502,13 @@ void DawnCaps::initCaps(const DawnBackendContext& backendContext, const ContextO
     }
     fSupportsPartialLoadResolve =
             backendContext.fDevice.HasFeature(wgpu::FeatureName::DawnPartialLoadResolveTexture);
+
+    SkDebugf("LLLL - DawnCaps:initCaps - \n\tfMSAARenderToSingleSampledSupport: %s\n\tfSupportedTransientAttachmentUsage: %s"
+             "\n\tfSupportedResolveTextureLoadOp: %s\n\tfSupportsPartialLoadResolve: %s\n",
+        fMSAARenderToSingleSampledSupport ? "yes" : "no",
+        fSupportedTransientAttachmentUsage == wgpu::TextureUsage::TransientAttachment ? "TransientAttachment" : "None",
+        fSupportedResolveTextureLoadOp.has_value() ? "ExpandResolveTexture" : "none",
+        fSupportsPartialLoadResolve ? "yes" : "no" );
 #endif
 
     if (!backendContext.fTick) {

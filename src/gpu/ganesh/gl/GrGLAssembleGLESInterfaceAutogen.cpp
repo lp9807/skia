@@ -505,6 +505,8 @@ sk_sp<const GrGLInterface> GrGLMakeAssembledGLESInterface(void *ctx, GrGLGetProc
     interface->fStandard = kGLES_GrGLStandard;
     interface->fExtensions.swap(&extensions);
 
+    SkDebugf("LLLL - GFrGLMakeAssembledGLESInteface: create interface %p successfully.\n", interface.get());
+
     return interface;
 }
 #endif

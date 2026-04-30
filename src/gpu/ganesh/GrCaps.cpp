@@ -167,6 +167,8 @@ void GrCaps::applyOptionsOverrides(const GrContextOptions& options) {
 
     fInternalMultisampleCount = options.fInternalMultisampleCount;
 
+    SkDebugf("LLLL - GrCaps::applyOptionsOverrides - fInternalMultisampleCount: %d\n", fInternalMultisampleCount);
+
     fAvoidStencilBuffers = options.fAvoidStencilBuffers;
 
     fDriverBugWorkarounds.applyOverrides(options.fDriverBugWorkarounds);
@@ -468,9 +470,17 @@ GrDstSampleFlags GrCaps::getDstSampleFlagsForProxy(const GrRenderTargetProxy* rt
 }
 
 bool GrCaps::supportsDynamicMSAA(const GrRenderTargetProxy* rtProxy) const {
-    return rtProxy->numSamples() == 1 &&
+    const bool supports = 
+           rtProxy->numSamples() == 1 &&
            this->internalMultisampleCount(rtProxy->backendFormat()) > 1 &&
            this->onSupportsDynamicMSAA(rtProxy);
+    SkDebugf("LLLL - GrCaps::supportDynamicMSAA - value: %s, rt sample: %d, rt type: %s, rt internal sample: %d, extra check: %s\n", 
+        supports ? "yes" : "no", 
+        rtProxy->numSamples(),
+        rtProxy->backendFormat().toStr().c_str(),
+        internalMultisampleCount(rtProxy->backendFormat()),
+        onSupportsDynamicMSAA(rtProxy) ? "yes" : "no" );
+    return supports;
 }
 
 static inline GrColorType color_type_fallback(GrColorType ct) {

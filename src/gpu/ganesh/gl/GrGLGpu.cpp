@@ -2466,6 +2466,12 @@ GrOpsRenderPass* GrGLGpu::onGetOpsRenderPass(
             return nullptr;
         }
     }
+
+    SkDebugf("LLLL - GrGLGpu::onGetOpsRenderPass - requireMSAA: %s, rt samples: %d, hasDynamicMSAAAttachment: %s\n", 
+        useMultisampleFBO ? "yes": "no",
+        rt->numSamples(),
+        static_cast<GrGLRenderTarget*>(rt)->hasDynamicMSAAAttachment() ? "yes" : "no" );
+
     fCachedOpsRenderPass->set(rt, useMultisampleFBO, bounds, origin, colorInfo, stencilInfo);
     return fCachedOpsRenderPass.get();
 }
@@ -2563,6 +2569,7 @@ GrGLenum GrGLGpu::prepareToDraw(GrPrimitiveType primitiveType) {
 }
 
 void GrGLGpu::onResolveRenderTarget(GrRenderTarget* target, const SkIRect& resolveRect) {
+    SkDebugf("LLLL - GrGLGpu::onResolveRenderTarget\n");
     auto glRT = static_cast<GrGLRenderTarget*>(target);
     if (this->glCaps().framebufferResolvesMustBeFullSize()) {
         this->resolveRenderFBOs(glRT, SkIRect::MakeSize(glRT->dimensions()),
