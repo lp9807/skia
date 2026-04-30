@@ -285,6 +285,7 @@ void DrawContext::flush(Recorder* recorder) {
                                                    pass->clearColor(),
                                                    pass->requiresMSAA(),
                                                    writeSwizzle);
+        SkDebugf("LLLL - DrawContext::flush - requiresMSAA: %s, \n", pass->requiresMSAA() ? "yes" : "no" );
 
         RenderPassTask::DrawPassList passes;
         passes.emplace_back(std::move(pass));

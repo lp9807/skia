@@ -270,7 +270,7 @@ static constexpr VkFormat kDepthStencilVkFormats[] = {
 TextureInfo VulkanCaps::getDefaultSampledTextureInfo(SkColorType ct,
                                                      Mipmapped mipmapped,
                                                      Protected isProtected,
-                                                     Renderable isRenderable) const {
+                                                     Renderable isRenderable ) const {
     VkFormat format = this->getFormatFromColorType(ct);
     const FormatInfo& formatInfo = this->getFormatInfo(format);
     static constexpr int defaultSampleCount = 1;

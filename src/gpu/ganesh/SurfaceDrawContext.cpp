@@ -318,6 +318,8 @@ SurfaceDrawContext::SurfaceDrawContext(GrRecordingContext* rContext,
         , fCanUseDynamicMSAA(
                 (fSurfaceProps.flags() & SkSurfaceProps::kDynamicMSAA_Flag) &&
                 rContext->priv().caps()->supportsDynamicMSAA(this->asRenderTargetProxy())) {
+    SkDebugf("LLLL - SurfaceDrawContext: - fSurface flag: 0x%x, supportsDynamicMSAA: %s, samples: %d\n", 
+        static_cast<unsigned>(fSurfaceProps.flags()), fCanUseDynamicMSAA ? "yes" : "no", numSamples() );
     SkDEBUGCODE(this->validate();)
 }
 

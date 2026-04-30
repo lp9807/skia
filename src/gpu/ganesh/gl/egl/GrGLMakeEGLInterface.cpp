@@ -25,6 +25,7 @@ static GrGLFuncPtr egl_get_gl_proc(void* ctx, const char name[]) {
 
 namespace GrGLInterfaces {
 sk_sp<const GrGLInterface> MakeEGL() {
+    SkDebugf("LLLL - GrGLInterfaces::MakeEGL\n");
     return GrGLMakeAssembledInterface(nullptr, egl_get_gl_proc);
 }
 }  // namespace GrGLInterfaces

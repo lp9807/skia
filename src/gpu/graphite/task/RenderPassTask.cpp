@@ -155,8 +155,12 @@ Task::Status RenderPassTask::addCommands(Context* context,
             return Status::kFail;
         }
         resolveAttachment = fTarget->refTexture();
+        SkDebugf("LLLL - RenderPassTask::addCommands - samples - resolveAttachment: [%d], colorAttachment: [%d]\n",
+            fTarget->numSamples(), fRenderPassDesc.fColorAttachment.fTextureInfo.numSamples());
     } else {
         colorAttachment = fTarget->refTexture();
+            SkDebugf("LLLL - RenderPassTask::addCommands - samples - colorAttachment: [%d]\n",
+            fTarget->numSamples() );
     }
 
     sk_sp<Texture> depthStencilAttachment;
