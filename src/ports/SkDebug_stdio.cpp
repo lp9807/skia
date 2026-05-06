@@ -22,6 +22,8 @@ void SkDebugf(const char format[], ...) {
     char str_printed[256];
     vsprintf(str_printed, format, args);
     OHOS::NWeb::HiLogAdapter::PrintLog(OHOS::NWeb::LogLevelAdapter::DEBUG, "%{public}s", str_printed);
+#else
+    vfprintf(stderr, format, args);
 #endif
 #else
 #pragma GCC diagnostic push

@@ -49,9 +49,18 @@ static std::atomic<SkEventTracer*> gUserTracer{nullptr};
 bool SkEventTracer::SetInstance(SkEventTracer* tracer, bool leakTracer) {
     SkEventTracer* expected = nullptr;
     if (!gUserTracer.compare_exchange_strong(expected, tracer)) {
+#ifdef __OHOS__
+        if( !tracer ) {
+            gUserTracer.exchange(nullptr);
+            delete expected;
+            return true;
+        }
+#else
         delete tracer;
         return false;
+#endif
     }
+
     // If leaking the tracer is accepted then there is no need to install
     // the atexit.
     if (!leakTracer) {

@@ -1718,5 +1718,7 @@ int main(int argc, char** argv) {
     SkGraphics::PurgeAllCaches();
     info("Finished!\n");
 
+    uninitializeEventTracingForTools();
+
     return 0;
 }

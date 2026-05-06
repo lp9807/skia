@@ -73,6 +73,14 @@ void initializeEventTracingForTools(const char* traceFlag) {
     SkAssertResult(SkEventTracer::SetInstance(eventTracer));
 }
 
+void uninitializeEventTracingForTools() {
+#ifdef __OHOS__
+    if( !FLAGS_trace.isEmpty() ) {
+        SkAssertResult(SkEventTracer::SetInstance(nullptr));
+    }
+#endif
+}
+
 uint8_t* SkEventTracingCategories::getCategoryGroupEnabled(const char* name) {
     static_assert(0 == offsetof(CategoryState, fEnabled), "CategoryState");
 

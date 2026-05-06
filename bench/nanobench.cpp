@@ -1697,5 +1697,7 @@ int main(int argc, char** argv) {
     log.endObject(); // root
     log.flush();
 
+    uninitializeEventTracingForTools();
+
     return 0;
 }
