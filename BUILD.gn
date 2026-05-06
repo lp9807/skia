@@ -993,10 +993,17 @@ optional("gpu") {
         sources += [ "src/gpu/ganesh/gl/epoxy/GrGLMakeEpoxyEGLInterface.cpp" ]
         libs += [ "epoxy" ]
       } else {
-        sources += [
-          "src/gpu/ganesh/gl/egl/GrGLMakeEGLInterface.cpp",
-          "src/gpu/ganesh/gl/egl/GrGLMakeNativeInterface_egl.cpp",
-        ]
+        if (is_ohos) {
+           sources += [
+            "src/gpu/ganesh/gl/egl/GrGLMakeEGLInterface_ohos.cpp",
+            "src/gpu/ganesh/gl/egl/GrGLMakeNativeInterface_egl.cpp",
+          ]
+        } else {
+          sources += [
+            "src/gpu/ganesh/gl/egl/GrGLMakeEGLInterface.cpp",
+            "src/gpu/ganesh/gl/egl/GrGLMakeNativeInterface_egl.cpp",
+          ]
+        }
         libs += [ "EGL" ]
       }
     } else if (skia_use_webgl) {

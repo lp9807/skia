@@ -1279,6 +1279,8 @@ Viewer::~Viewer() {
 
     fWindow->detach();
     delete fWindow;
+
+    uninitializeEventTracingForTools();
 }
 
 struct SkPaintTitleUpdater {

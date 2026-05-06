@@ -15,6 +15,7 @@
  * defaulting to the --trace command line argument.
  */
 void initializeEventTracingForTools(const char* mode = nullptr);
+void uninitializeEventTracingForTools();
 
 /**
  * Helper class used by internal implementations of SkEventTracer to manage categories.
