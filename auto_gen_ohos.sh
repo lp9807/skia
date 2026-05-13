@@ -27,7 +27,7 @@ if ! [ -z $HOS_SDK ]; then
     ohos_sdk_path=$HOS_SDK
 elif [ -d "$skia_path/ohos_sdk" ]; then
     ohos_sdk_path=$skia_path/ohos_sdk
-endif
+fi
 
 is_shared_build=true
 while getopts 'shn:' opt; do
@@ -110,6 +110,8 @@ fi
 
 if ! [ -z $HOS_CC ]; then
     cc_path=$HOS_CC
+elif [[ "$is_windows" == "true" ]]; then
+	cc_path=$llvm_path/bin/clang.exe
 else
     cc_path=$llvm_path/bin/clang
 fi
@@ -118,7 +120,9 @@ echo "$cc_path"
 
 if ! [ -z $HOS_CXX ]; then
     cxx_path=$HOS_CXX
-else  
+elif [[ "$is_windows" == "true" ]]; then
+	cxx_path=$llvm_path/bin/clang++.exe
+else
     cxx_path=$llvm_path/bin/clang++
 fi
 echo -en "${YELLOW}Using${NOCOLOR} CXX path = "
@@ -156,8 +160,8 @@ bin/gn gen "$default_output_path" --args="
     target_os=\"ohos\"
     target_cpu=\"arm64\"
     skia_enable_graphite=true
-    skia_use_gl=false
-    skia_use_egl=false
+    skia_use_gl=true
+    skia_use_egl=true
     skia_use_vulkan=true
     skia_use_dawn=true
     dawn_enable_vulkan=true
