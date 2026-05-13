@@ -2160,7 +2160,7 @@ if (skia_enable_tools) {
       frameworks = []
 
       if (is_ohos) {
-        libs += [hilog_ndk.z]
+        libs += ["hilog_ndk.z"]
         sources += ["tools/sk_app/ohos/logger_common.h"]
       }
 

@@ -20,6 +20,7 @@
 #ifndef __dng_safe_arithmetic__
 #define __dng_safe_arithmetic__
 
+#include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <limits>

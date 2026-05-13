@@ -45,6 +45,8 @@ def main():
       default="",
       help="Android platform (e.g., android-29).")
   parser.add_argument(
+      "--ohos_ndk_path", default="", help="Path to the OHOS NDK.")
+  parser.add_argument(
       "--dawn_enable_d3d11", default="false", help="Enable D3D11 backend.")
   parser.add_argument(
       "--dawn_enable_d3d12", default="false", help="Enable D3D12 backend.")
@@ -146,6 +148,9 @@ def main():
     configure_cmd.append(f"-DCMAKE_TOOLCHAIN_FILE={args.android_ndk_path}/build/cmake/android.toolchain.cmake")
     configure_cmd.append(f"-DANDROID_ABI={target_cpu}")
     configure_cmd.append(f"-DANDROID_PLATFORM={args.android_platform}")
+  elif target_os == "ohos" or target_os == "OHOS":
+    configure_cmd.append(f"-DCMAKE_TOOLCHAIN_FILE={args.ohos_ndk_path}/build/cmake/ohos.toolchain.cmake")
+    configure_cmd.append(f"-DCMAKE_LINKER={args.ohos_ndk_path}/llvm/bin/lld.exe")
   else:
     configure_cmd.append(f"-DCMAKE_C_COMPILER={args.cc.replace(os.sep, '/')}")
     configure_cmd.append(f"-DCMAKE_CXX_COMPILER={args.cxx.replace(os.sep, '/')}")

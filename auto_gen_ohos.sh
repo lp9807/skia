@@ -9,15 +9,6 @@ YELLOW='\033[0;33m'
 GREEN='\033[0;32m'
 NOCOLOR='\033[0m' # Resets to default
 
-is_shared_build=true
-while getopts 'sh' opt; do
-    case "$opt" in
-        s) echo "Build using static option for linking";is_shared_build=false;;
-        h) echo "Usage: $(basename $0) [-s build using static link]"; exit 0;;
-        *) echo "Invalid option"; exit 1;;
-    esac
-done
-
 if [[ "$OS" == "Windows_NT" ]]; then
     is_windows=true
 else
@@ -31,20 +22,35 @@ else
 fi
 
 # Auto-generated paths, verify their correctness
+ohos_sdk_path=""
 if ! [ -z $HOS_SDK ]; then
     ohos_sdk_path=$HOS_SDK
-elif ! [-z $HOS_NDK ]; then
-    ohos_sdk_path=$HOS_NDK
 elif [ -d "$skia_path/ohos_sdk" ]; then
     ohos_sdk_path=$skia_path/ohos_sdk
-elif [ -d "$skia_path/ohos_ndk" ]; then
-    ohos_sdk_path=$skia_path/ohos_ndk
-else
-    echo 'No HOS SDK found! You have 4 options:'
+endif
+
+is_shared_build=true
+while getopts 'shn:' opt; do
+    case "$opt" in
+        s) echo "Build using static option for linking";is_shared_build=false;;
+        n) ohos_sdk_path=$OPTARG;;
+        h) { 
+            cat << EOF
+Usage: $(basename $0) [-s][-n PATH]
+    -s: enable static linking
+    -n: specify ohos sdk path
+EOF
+        } 
+        exit 0;;
+        *) echo "Invalid option"; exit 1;;
+    esac
+done
+
+if [[ -z $ohos_sdk_path ]]; then
+    echo 'No HOS SDK found! You have 3 options:'
     echo '1. Setup shell variable $HOS_SDK'
-    echo '2. Setup shell variable $HOS_NDK'
-    echo '3. Put the SDK in ./ohos_sdk'
-    echo '4. Put the NDK in ./ohos_ndk'
+    echo '2. Put the SDK in ./ohos_sdk'
+    echo '3. Specify path to SDK by -n'
     exit 1
 fi
 
@@ -62,18 +68,7 @@ fi
 
 third_party_dng_sdk_path=$skia_path/third_party/externals/dng_sdk
 third_party_zlib_path=$skia_path/third_party/externals/zlib
-third_party_microhttpd_path=$skia_path/third_party/externals/microhttpd/src/include
-third_party_dawn_path=$skia_path/third_party/externals/dawn/src/dawn
 third_party_partition_alloc=$skia_path/third_party/externals/partition_alloc/src/partition_alloc
-third_party_vulkan_path=$skia_path/third_party/externals/vulkan-headers/include/vulkan
-
-# if [ -d "$third_party_microhttpd_path" ]; then
-#     third_party_microhttpd_path=$third_party_microhttpd_path/microhttpd.h
-#     cp modified_external_third_party/microhttpd.h $third_party_microhttpd_path
-# else
-#     echo "Cannot find $third_party_microhttpd_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
-#     exit 1
-# fi
 
 if [ -d "$third_party_dng_sdk_path" ]; then
     # Change dng sdk dng_safe_arithmetic
@@ -90,25 +85,6 @@ if [ -d "$third_party_zlib_path" ]; then
     cp modified_external_third_party/cpu_features.c $zlib_cpu_features_path
 else
     echo "Cannot find $third_party_zlib_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
-    exit 1
-fi
-
-if [ -d "$third_party_vulkan_path" ]; then
-
-    cp modified_external_third_party/vulkan_core.h $third_party_vulkan_path/vulkan_core.h
-    cp modified_external_third_party/vulkan_ohos.h $third_party_vulkan_path/vulkan_ohos.h
-    cp modified_external_third_party/vulkan.h $third_party_vulkan_path/vulkan.h
-else
-    echo "Cannot find $third_party_vulkan_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
-    exit 1
-fi
-
-if [ -d "$third_party_dawn_path" ]; then
-
-    cp modified_external_third_party/dawn.json $third_party_dawn_path/dawn.json
-    cp modified_external_third_party/dawn_wire.json $third_party_dawn_path/dawn_wire.json
-else
-    echo "Cannot $third_party_dawn_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
     exit 1
 fi
 
@@ -148,6 +124,10 @@ fi
 echo -en "${YELLOW}Using${NOCOLOR} CXX path = "
 echo "$cxx_path"
 
+ndk_path=$ohos_sdk_path/native/
+echo -en "${YELLOW}Using${NOCOLOR} ndk path = "
+echo "$ndk_path"
+
 if [[ "$is_windows" == "true" ]]; then
     # Windows build fix
     ar_path="$llvm_path/bin/llvm-ar"
@@ -155,7 +135,7 @@ if [[ "$is_windows" == "true" ]]; then
     echo "When running ninja and have a bug related to <ar>, add modified_external_third_party/ar/ into your PATH variable (or if you want, copy llvm-ar.exe from $ar_path into the folder)."
 fi
 
-default_output_path="out/ohos_debug"
+default_output_path="out/ohos_debug/"
 
 if [[ $is_shared_build == "true" ]]; then
     extra_static=""
@@ -183,6 +163,7 @@ bin/gn gen "$default_output_path" --args="
     dawn_enable_vulkan=true
     cc=\"$cc_path\"
     cxx=\"$cxx_path\"
+    ndk=\"$ndk_path\"
     extra_cflags=[
         \"--target=aarch64-linux-ohos\",
         \"--sysroot=$sdk_system_root\",

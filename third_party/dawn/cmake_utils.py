@@ -240,6 +240,13 @@ def get_cmake_os_cpu(os, cpu):
       "x64": "AMD64",
     }
     return "Windows", target_cpu_map[cpu]
+  
+  if os == "ohos":
+    target_cpu_map = {
+      "arm64": "ARM64",
+      "arm": "ARM"
+    }
+    return "OHOS", target_cpu_map[cpu]
 
   print("Unsupported OS")
   sys.exit(1)
@@ -339,9 +346,11 @@ def combine_into_library(args, output_path, build_dir, target_os, object_files):
   assert len(object_files) > 0
   # Use ar/lib to join all the object files that comprise the necessary
   # libraries and any transitive dependencies into one .a file.
-  if target_os == "Windows":
+  if target_os == "Windows" or target_os == "OHOS":
     # On Windows, we use lld-link.exe for clang, and lib.exe for MSVC.
-    if args.is_clang:
+    if target_os == "OHOS":
+        linker_exe = os.path.join(os.path.dirname(args.cc), "llvm-ar.exe")
+    elif args.is_clang:
         linker_exe = os.path.join(os.path.dirname(args.cc), "lld-link.exe")
     else:
         # We can't just use ar.exe because it is not shipped with MSVC.
@@ -355,7 +364,11 @@ def combine_into_library(args, output_path, build_dir, target_os, object_files):
     with open(response_file_path, "w") as f:
       for obj in object_files:
         f.write(f'"{obj}"\n')
-    combine_obj_cmd = [
+    
+    if target_os == "OHOS":
+      combine_obj_cmd = [linker_exe, "rcs", lib_name, f"@{response_file_name}"]
+    else:
+      combine_obj_cmd = [
         linker_exe, "/LIB", f"/OUT:{lib_name}", f"@{response_file_name}"
     ]
   else:

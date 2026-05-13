@@ -255,6 +255,9 @@ action("dawn_cmake") {
       "--android_platform=android-" + ndk_api,
     ]
   }
+  if (is_ohos && defined(ndk) ) {
+    args += [ "--ohos_ndk_path=" + ndk ]
+  }
 
   if (dawn_enable_d3d11) {
     args += [ "--dawn_enable_d3d11=true" ]

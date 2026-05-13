@@ -40,7 +40,7 @@ class VulkanProgramInfo {
 public:
     inline static constexpr unsigned int kMaxNumDescSets = 4;
     using DescriptorSetLayouts =
-            skia_private::STArray<VulkanGraphicsPipeline::kMaxNumDescSets, VkDescriptorSetLayout>;
+            skia_private::STArray<kMaxNumDescSets, VkDescriptorSetLayout>;
 
     ~VulkanProgramInfo();
 
@@ -53,6 +53,8 @@ public:
     VkShaderModule fs() const { return fFS; }
     VkPipelineLayout layout() const { return fLayout; }
     const DescriptorSetLayouts& setLayouts() const { return fDescSetLayouts; }
+
+    DescriptorSetLayouts& setLayouts() { return fDescSetLayouts; }
 
     // Relinquishes ownership of the VkPipelineLayout and no longer holds a pointer to it.
     VkPipelineLayout releaseLayout() {

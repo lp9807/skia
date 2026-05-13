@@ -1230,7 +1230,7 @@ std::unique_ptr<VulkanProgramInfo> VulkanGraphicsPipeline::CreateLoadMSAAProgram
                 /*numTextureSamplers=*/0,
                 /*loadMsaaFromResolve=*/true,
                 /*immutableSamplers=*/{},
-                /*descriptorSetLayouts*/fDescSetLayouts))) {
+                /*descriptorSetLayouts*/program->setLayouts()))) {
         return nullptr;
     }
 

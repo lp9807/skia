@@ -230,8 +230,6 @@ skia_component("window") {
       if (dawn_enable_vulkan) {
         if (skia_enable_graphite) {
           sources += [
-            "GraphiteDawnWindowContext.cpp",
-            "GraphiteDawnWindowContext.h",
             "ohos/GraphiteDawnVulkanWindowContext_ohos.cpp",
             "GraphiteDisplayParams.h"
           ]
