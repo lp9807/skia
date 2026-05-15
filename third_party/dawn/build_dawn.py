@@ -58,7 +58,11 @@ def main():
       "--dawn_enable_vulkan", default="false", help="Enable Vulkan backend.")
   args = parser.parse_args()
 
+  target_os, target_cpu = get_cmake_os_cpu(args.target_os, args.target_cpu)
+
   cmake_exe = shutil.which("cmake")
+  if target_os == "OHOS":
+    cmake_exe = f"{args.ohos_ndk_path}/build-tools/cmake/bin/cmake.exe"
   if not cmake_exe:
     print("Error: cmake not found in PATH.")
     sys.exit(1)
@@ -67,8 +71,6 @@ def main():
   if not ninja_exe:
     print("Error: ninja not found in PATH.")
     sys.exit(1)
-
-  target_os, target_cpu = get_cmake_os_cpu(args.target_os, args.target_cpu)
 
   output_path = args.output_path
   gen_dir = args.gen_dir
@@ -128,7 +130,8 @@ def main():
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=ON")
   else:
     configure_cmd.append("-DTINT_BUILD_HLSL_WRITER=OFF")
-    cxx_flags.append("-w") # Silence warnings
+    if target_os != "OHOS":
+      cxx_flags.append("-w") # Silence warnings
 
   if cxx_flags:
     c_cxx_flags_str = " ".join(cxx_flags)
@@ -148,9 +151,12 @@ def main():
     configure_cmd.append(f"-DCMAKE_TOOLCHAIN_FILE={args.android_ndk_path}/build/cmake/android.toolchain.cmake")
     configure_cmd.append(f"-DANDROID_ABI={target_cpu}")
     configure_cmd.append(f"-DANDROID_PLATFORM={args.android_platform}")
-  elif target_os == "ohos" or target_os == "OHOS":
+  elif target_os == "OHOS":
     configure_cmd.append(f"-DCMAKE_TOOLCHAIN_FILE={args.ohos_ndk_path}/build/cmake/ohos.toolchain.cmake")
-    configure_cmd.append(f"-DCMAKE_LINKER={args.ohos_ndk_path}/llvm/bin/lld.exe")
+    #configure_cmd.append(f"-DCMAKE_LINKER={args.ohos_ndk_path}/llvm/bin/lld.exe")
+    #configure_cmd.append(f"-DCMAKE_SYSROOT={args.ohos_ndk_path}/sysroot")
+    #configure_cmd.append(f"-DCMAKE_C_COMPILER={args.cc.replace(os.sep, '/')}")
+    #configure_cmd.append(f"-DCMAKE_CXX_COMPILER={args.cxx.replace(os.sep, '/')}")
   else:
     configure_cmd.append(f"-DCMAKE_C_COMPILER={args.cc.replace(os.sep, '/')}")
     configure_cmd.append(f"-DCMAKE_CXX_COMPILER={args.cxx.replace(os.sep, '/')}")
