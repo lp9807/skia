@@ -445,8 +445,7 @@ std::cout << "init op type: Noop\n";
 //DrawPathOp
         void *pathdata0 = malloc(52);
         hexToRawData("050000000400000000000000040000000070544500706d450070544500a06d4500a0544500a06d4500a0544500406d4500010101", pathdata0, 52);
-        SkPath path0;
-        path0.readFromMemory(pathdata0, 52);
+        auto path0 = SkPath::ReadFromMemory(pathdata0, 52);
         void *paintdata_path0 = malloc(28);
         hexToRawData("0000000000008040efee6e3fefee6e3fefee6e3f0000803f01030000", paintdata_path0, 28);
         SkReadBuffer paintBuffer_path0(paintdata_path0, 28);
@@ -456,8 +455,7 @@ std::cout << "init op type: Noop\n";
 //DrawPathOp
         void *pathdata1 = malloc(52);
         hexToRawData("050000000400000000000000040000000000e04100406d450000e04100a06d450000f84100706d450000f84100406d4500010101", pathdata1, 52);
-        SkPath path1;
-        path1.readFromMemory(pathdata1, 52);
+        auto path1 = SkPath::ReadFromMemory(pathdata1, 52);
         void *paintdata_path1 = malloc(28);
         hexToRawData("00000000000080409b9a1a3f9b9a1a3f9b9a1a3f0000803f01030000", paintdata_path1, 28);
         SkReadBuffer paintBuffer_path1(paintdata_path1, 28);
@@ -803,14 +801,14 @@ std::cout << "render op type: DrawRectOp\n";
         }
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path0, paintPath0);
+        canvas->drawPath(path0.value(), paintPath0);
         free(pathdata0);
         free(paintdata_path0);
     }
         
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path1, paintPath1);
+        canvas->drawPath(path1.value(), paintPath1);
         free(pathdata1);
         free(paintdata_path1);
     }

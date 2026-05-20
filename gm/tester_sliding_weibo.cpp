@@ -4429,8 +4429,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata0 = malloc(128);
         hexToRawData("050000000d00000000000000050000009a991141333347429a991141cccc70426666b6419a99894200001e429a9989429a9961429a998942cdcc8b4234337142cdcc8b4234334742cdcc8b4234331d42cdcc60429a99f54100001e429a99f5416666b6419a99f5419a99114133331d429a991141333347420004040404000000", pathdata0, 128);
-        SkPath path0;
-        path0.readFromMemory(pathdata0, 128);
+        
+        auto path0 = SkPath::ReadFromMemory(pathdata0, 128);
         void *paintdata_path0 = malloc(28);
         hexToRawData("00000000000080400000803f0000803f0000803f0000803f01030000", paintdata_path0, 28);
         SkReadBuffer paintBuffer_path0(paintdata_path0, 28);
@@ -4444,8 +4444,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata1 = malloc(388);
         hexToRawData("050000002c000000000000001200000000008c42cdcc0a4266668942333309429a99874267660842333389420000024200008c423333e74133338c426666ce4133338942cdccbc413333834200009c4166666642cdcc9c41000042420000bc41000042420000bc41666636426666c641333339423333b341cdcc3e4233338f4100003e429999614133333542cccc3c419a9921429a99d9406666da410000404166667e419a99b9410000f0409a99fd4100002040cdcc224200002040666642420000204099997d429a99ad410000914233332142000091429a998142000091423333a242cdcc68423333a24200003c420000a24266662042333396423333114200008c42cdcc0a42cdcc2042333386423333cb4133338942666646419a997742666636410000504266662641333329429a99ad4166660442666612429a99fd41ffff4d426866f241cccc80429a991342cccc824234333b42000085420000624266665c4266668342cdcc2042333386420004040404040404040404050004040404050000", pathdata1, 388);
-        SkPath path1;
-        path1.readFromMemory(pathdata1, 388);
+        
+        auto path1 = SkPath::ReadFromMemory(pathdata1, 388);
         void *paintdata_path1 = malloc(28);
         hexToRawData("0000000000008040d7d6563fadac2c3ea9a8283e0000803f01030000", paintdata_path1, 28);
         SkReadBuffer paintBuffer_path1(paintdata_path1, 28);
@@ -4459,8 +4459,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata2 = malloc(252);
         hexToRawData("050000001c000000000000000c0000009a99ac42cdccec40cdcca0426866663f67668f42ccccccbf67667e42c0cccc3d67667e42c0cccc3dcdcc7642fdffff3e010072423333134001007442333383409b9975420000c040cecc7c426666e640000082426666d64066668d420000b040cdcc99429999e9406666a24266663e419999aa42cccc84410000ad420000b8419999a9420000e4419999a9420000e4416666a8426666f2416666aa4233330142ffffad429a9903429999b142000006429999b54200000242ccccb6429a99f541ccccb6429a99f5419a99bb423333b7416666b842000060419a99ac42cdccec40000401040404040104040104", pathdata2, 252);
-        SkPath path2;
-        path2.readFromMemory(pathdata2, 252);
+        
+        auto path2 = SkPath::ReadFromMemory(pathdata2, 252);
         void *paintdata_path2 = malloc(28);
         hexToRawData("0000000000008040e9e8683f9392123fa1a0a03d0000803f01030000", paintdata_path2, 28);
         SkReadBuffer paintBuffer_path2(paintdata_path2, 28);
@@ -4474,8 +4474,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata3 = malloc(244);
         hexToRawData("050000001b000000000000000b00000066669a4233337b41999994420000484133338c42cccc3441333384429a994141333381420000484100007e420000604199997f4234337b41999980429a99894199998342676692410000874234338f410000874234338f41cdcc8a4201008c4100008f429a9991419a9991429a999d41676694429a99a941343395423433bb41000094426766ca41000094426766ca41333393426766d641cdcc94420100e441cdcc97420100e841cdcc9a423433eb4133339e42cecce44133339f42ceccd841cdcca142cdccb8416666a0426666964166669a4233337b41000404040104040104040400", pathdata3, 244);
-        SkPath path3;
-        path3.readFromMemory(pathdata3, 244);
+        
+        auto path3 = SkPath::ReadFromMemory(pathdata3, 244);
         void *paintdata_path3 = malloc(28);
         hexToRawData("0000000000008040e9e8683f9392123fa1a0a03d0000803f01030000", paintdata_path3, 28);
         SkReadBuffer paintBuffer_path3(paintdata_path3, 28);
@@ -4489,8 +4489,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata4 = malloc(348);
         hexToRawData("05000000270000000000000012000000cdcc264233331d4267660a4299991542cdccd441999923420000bc4133333d423333a341cdcc56423333bb41cccc72420000f44166667c429a991742cdcc8242cdcc3a42333377423333474299995b42333353426666404266664442cdcc2442cdcc264233331d423333114200005e4299990b42cdcc66426666fe4133336b423333eb41cdcc66429999d941676662423333d341000058423333df4133334f426666ea4166664642333301426666424266660a42666646420000144266664a42cdcc1642cdcc54423333114200005e42000024429a994542666622429a9949429a991d42cdcc4a429a9919429a9949426766164200004842cdcc144267664442cdcc1642cdcc4042676618429a993d4233331d429a993b42cdcc2042cdcc3c423333254200003e420000264266664242000024429a9945420004040404050004040404050004040404050000", pathdata4, 348);
-        SkPath path4;
-        path4.readFromMemory(pathdata4, 348);
+        
+        auto path4 = SkPath::ReadFromMemory(pathdata4, 348);
         void *paintdata_path4 = malloc(28);
         hexToRawData("00000000000080408180803c00000000000000000000803f01030000", paintdata_path4, 28);
         SkReadBuffer paintBuffer_path4(paintdata_path4, 28);
@@ -4716,7 +4716,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path0, paintPath0);
+        canvas->drawPath(path0.value(), paintPath0);
         free(pathdata0);
         free(paintdata_path0);
     }
@@ -4727,7 +4727,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path1, paintPath1);
+        canvas->drawPath(path1.value(), paintPath1);
         free(pathdata1);
         free(paintdata_path1);
     }
@@ -4738,7 +4738,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path2, paintPath2);
+        canvas->drawPath(path2.value(), paintPath2);
         free(pathdata2);
         free(paintdata_path2);
     }
@@ -4749,7 +4749,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path3, paintPath3);
+        canvas->drawPath(path3.value(), paintPath3);
         free(pathdata3);
         free(paintdata_path3);
     }
@@ -4760,7 +4760,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path4, paintPath4);
+        canvas->drawPath(path4.value(), paintPath4);
         free(pathdata4);
         free(paintdata_path4);
     }
@@ -7733,8 +7733,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata5 = malloc(224);
         hexToRawData("0501000016000000040000000f0000005839fc408b6c37408b6cff408b6c37409cc400417b143e40ac1c00416ce743405839b8407b1400417110b740e05b01418941b44042600141355e8a401f850141237a874075870141d34d86404035004116d9fe3f93184440bdbef33fe4973740508d074014ae374019045e404f8d3740e04f65404f8d37400bd76b4030083c402b876e4082c04240d1229f406666c640b81ec94084eb41405a69cb40ccf936401058d1403c0a37405839fc40ec7c37401e04583f462f563fe4da0a3f5bbf543f00040103010301030104010103010500", pathdata5, 224);
-        SkPath path5;
-        path5.readFromMemory(pathdata5, 224);
+        
+        auto path5 = SkPath::ReadFromMemory(pathdata5, 224);
         void *paintdata_path5 = malloc(28);
         hexToRawData("00000000000080400000803f0000803f0000803f0000803f01030000", paintdata_path5, 28);
         SkReadBuffer paintBuffer_path5(paintdata_path5, 28);
@@ -8065,7 +8065,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path5, paintPath5);
+        canvas->drawPath(path5.value(), paintPath5);
         free(pathdata5);
         free(paintdata_path5);
     }
@@ -9868,8 +9868,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata6 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata6, 92);
-        SkPath path6;
-        path6.readFromMemory(pathdata6, 92);
+        
+        auto path6 = SkPath::ReadFromMemory(pathdata6, 92);
         void *paintdata_path6 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path6, 28);
         SkReadBuffer paintBuffer_path6(paintdata_path6, 28);
@@ -10315,7 +10315,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path6, paintPath6);
+        canvas->drawPath(path6.value(), paintPath6);
         free(pathdata6);
         free(paintdata_path6);
     }
@@ -10652,8 +10652,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata7 = malloc(224);
         hexToRawData("0501000016000000040000000f0000005839fc408b6c37408b6cff408b6c37409cc400417b143e40ac1c00416ce743405839b8407b1400417110b740e05b01418941b44042600141355e8a401f850141237a874075870141d34d86404035004116d9fe3f93184440bdbef33fe4973740508d074014ae374019045e404f8d3740e04f65404f8d37400bd76b4030083c402b876e4082c04240d1229f406666c640b81ec94084eb41405a69cb40ccf936401058d1403c0a37405839fc40ec7c37401e04583f462f563fe4da0a3f5bbf543f00040103010301030104010103010500", pathdata7, 224);
-        SkPath path7;
-        path7.readFromMemory(pathdata7, 224);
+        
+        auto path7 = SkPath::ReadFromMemory(pathdata7, 224);
         void *paintdata_path7 = malloc(28);
         hexToRawData("00000000000080400000803f0000803f0000803f0000803f01030000", paintdata_path7, 28);
         SkReadBuffer paintBuffer_path7(paintdata_path7, 28);
@@ -10982,7 +10982,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path7, paintPath7);
+        canvas->drawPath(path7.value(), paintPath7);
         free(pathdata7);
         free(paintdata_path7);
     }
@@ -12453,8 +12453,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata8 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata8, 92);
-        SkPath path8;
-        path8.readFromMemory(pathdata8, 92);
+        
+        auto path8 = SkPath::ReadFromMemory(pathdata8, 92);
         void *paintdata_path8 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path8, 28);
         SkReadBuffer paintBuffer_path8(paintdata_path8, 28);
@@ -12898,7 +12898,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path8, paintPath8);
+        canvas->drawPath(path8.value(), paintPath8);
         free(pathdata8);
         free(paintdata_path8);
     }
@@ -13628,8 +13628,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata9 = malloc(224);
         hexToRawData("0501000016000000040000000f0000005839fc408b6c37408b6cff408b6c37409cc400417b143e40ac1c00416ce743405839b8407b1400417110b740e05b01418941b44042600141355e8a401f850141237a874075870141d34d86404035004116d9fe3f93184440bdbef33fe4973740508d074014ae374019045e404f8d3740e04f65404f8d37400bd76b4030083c402b876e4082c04240d1229f406666c640b81ec94084eb41405a69cb40ccf936401058d1403c0a37405839fc40ec7c37401e04583f462f563fe4da0a3f5bbf543f00040103010301030104010103010500", pathdata9, 224);
-        SkPath path9;
-        path9.readFromMemory(pathdata9, 224);
+        
+        auto path9 = SkPath::ReadFromMemory(pathdata9, 224);
         void *paintdata_path9 = malloc(28);
         hexToRawData("00000000000080400000803f0000803f0000803f0000803f01030000", paintdata_path9, 28);
         SkReadBuffer paintBuffer_path9(paintdata_path9, 28);
@@ -14052,7 +14052,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path9, paintPath9);
+        canvas->drawPath(path9.value(), paintPath9);
         free(pathdata9);
         free(paintdata_path9);
     }
@@ -15091,8 +15091,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata10 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata10, 92);
-        SkPath path10;
-        path10.readFromMemory(pathdata10, 92);
+        
+        auto path10 = SkPath::ReadFromMemory(pathdata10, 92);
         void *paintdata_path10 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path10, 28);
         SkReadBuffer paintBuffer_path10(paintdata_path10, 28);
@@ -15630,7 +15630,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path10, paintPath10);
+        canvas->drawPath(path10.value(), paintPath10);
         free(pathdata10);
         free(paintdata_path10);
     }
@@ -16513,8 +16513,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata11 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata11, 92);
-        SkPath path11;
-        path11.readFromMemory(pathdata11, 92);
+        
+        auto path11 = SkPath::ReadFromMemory(pathdata11, 92);
         void *paintdata_path11 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path11, 28);
         SkReadBuffer paintBuffer_path11(paintdata_path11, 28);
@@ -17052,7 +17052,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path11, paintPath11);
+        canvas->drawPath(path11.value(), paintPath11);
         free(pathdata11);
         free(paintdata_path11);
     }
@@ -18505,8 +18505,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata12 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata12, 92);
-        SkPath path12;
-        path12.readFromMemory(pathdata12, 92);
+        
+        auto path12 = SkPath::ReadFromMemory(pathdata12, 92);
         void *paintdata_path12 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path12, 28);
         SkReadBuffer paintBuffer_path12(paintdata_path12, 28);
@@ -18786,7 +18786,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path12, paintPath12);
+        canvas->drawPath(path12.value(), paintPath12);
         free(pathdata12);
         free(paintdata_path12);
     }
@@ -18996,8 +18996,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata13 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata13, 92);
-        SkPath path13;
-        path13.readFromMemory(pathdata13, 92);
+        
+        auto path13 = SkPath::ReadFromMemory(pathdata13, 92);
         void *paintdata_path13 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path13, 28);
         SkReadBuffer paintBuffer_path13(paintdata_path13, 28);
@@ -19277,7 +19277,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path13, paintPath13);
+        canvas->drawPath(path13.value(), paintPath13);
         free(pathdata13);
         free(paintdata_path13);
     }
@@ -19487,8 +19487,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata14 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata14, 92);
-        SkPath path14;
-        path14.readFromMemory(pathdata14, 92);
+        
+        auto path14 = SkPath::ReadFromMemory(pathdata14, 92);
         void *paintdata_path14 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path14, 28);
         SkReadBuffer paintBuffer_path14(paintdata_path14, 28);
@@ -19768,7 +19768,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path14, paintPath14);
+        canvas->drawPath(path14.value(), paintPath14);
         free(pathdata14);
         free(paintdata_path14);
     }
@@ -20568,8 +20568,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata15 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata15, 92);
-        SkPath path15;
-        path15.readFromMemory(pathdata15, 92);
+        
+        auto path15 = SkPath::ReadFromMemory(pathdata15, 92);
         void *paintdata_path15 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path15, 28);
         SkReadBuffer paintBuffer_path15(paintdata_path15, 28);
@@ -20849,7 +20849,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path15, paintPath15);
+        canvas->drawPath(path15.value(), paintPath15);
         free(pathdata15);
         free(paintdata_path15);
     }
@@ -21059,8 +21059,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata16 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata16, 92);
-        SkPath path16;
-        path16.readFromMemory(pathdata16, 92);
+        
+        auto path16 = SkPath::ReadFromMemory(pathdata16, 92);
         void *paintdata_path16 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path16, 28);
         SkReadBuffer paintBuffer_path16(paintdata_path16, 28);
@@ -21340,7 +21340,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path16, paintPath16);
+        canvas->drawPath(path16.value(), paintPath16);
         free(pathdata16);
         free(paintdata_path16);
     }
@@ -21550,8 +21550,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata17 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata17, 92);
-        SkPath path17;
-        path17.readFromMemory(pathdata17, 92);
+        
+        auto path17 = SkPath::ReadFromMemory(pathdata17, 92);
         void *paintdata_path17 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path17, 28);
         SkReadBuffer paintBuffer_path17(paintdata_path17, 28);
@@ -21831,7 +21831,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path17, paintPath17);
+        canvas->drawPath(path17.value(), paintPath17);
         free(pathdata17);
         free(paintdata_path17);
     }
@@ -22041,8 +22041,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata18 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata18, 92);
-        SkPath path18;
-        path18.readFromMemory(pathdata18, 92);
+        
+        auto path18 = SkPath::ReadFromMemory(pathdata18, 92);
         void *paintdata_path18 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path18, 28);
         SkReadBuffer paintBuffer_path18(paintdata_path18, 28);
@@ -22322,7 +22322,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path18, paintPath18);
+        canvas->drawPath(path18.value(), paintPath18);
         free(pathdata18);
         free(paintdata_path18);
     }
@@ -22532,8 +22532,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata19 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata19, 92);
-        SkPath path19;
-        path19.readFromMemory(pathdata19, 92);
+        
+        auto path19 = SkPath::ReadFromMemory(pathdata19, 92);
         void *paintdata_path19 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path19, 28);
         SkReadBuffer paintBuffer_path19(paintdata_path19, 28);
@@ -22813,7 +22813,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path19, paintPath19);
+        canvas->drawPath(path19.value(), paintPath19);
         free(pathdata19);
         free(paintdata_path19);
     }
@@ -23023,8 +23023,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata20 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata20, 92);
-        SkPath path20;
-        path20.readFromMemory(pathdata20, 92);
+        
+        auto path20 = SkPath::ReadFromMemory(pathdata20, 92);
         void *paintdata_path20 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path20, 28);
         SkReadBuffer paintBuffer_path20(paintdata_path20, 28);
@@ -23304,7 +23304,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path20, paintPath20);
+        canvas->drawPath(path20.value(), paintPath20);
         free(pathdata20);
         free(paintdata_path20);
     }
@@ -23514,8 +23514,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata21 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata21, 92);
-        SkPath path21;
-        path21.readFromMemory(pathdata21, 92);
+        
+        auto path21 = SkPath::ReadFromMemory(pathdata21, 92);
         void *paintdata_path21 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path21, 28);
         SkReadBuffer paintBuffer_path21(paintdata_path21, 28);
@@ -23795,7 +23795,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path21, paintPath21);
+        canvas->drawPath(path21.value(), paintPath21);
         free(pathdata21);
         free(paintdata_path21);
     }
@@ -24005,8 +24005,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata22 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata22, 92);
-        SkPath path22;
-        path22.readFromMemory(pathdata22, 92);
+        
+        auto path22 = SkPath::ReadFromMemory(pathdata22, 92);
         void *paintdata_path22 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path22, 28);
         SkReadBuffer paintBuffer_path22(paintdata_path22, 28);
@@ -24286,7 +24286,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path22, paintPath22);
+        canvas->drawPath(path22.value(), paintPath22);
         free(pathdata22);
         free(paintdata_path22);
     }
@@ -24496,8 +24496,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata23 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata23, 92);
-        SkPath path23;
-        path23.readFromMemory(pathdata23, 92);
+        
+        auto path23 = SkPath::ReadFromMemory(pathdata23, 92);
         void *paintdata_path23 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path23, 28);
         SkReadBuffer paintBuffer_path23(paintdata_path23, 28);
@@ -24777,7 +24777,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path23, paintPath23);
+        canvas->drawPath(path23.value(), paintPath23);
         free(pathdata23);
         free(paintdata_path23);
     }
@@ -24987,8 +24987,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata24 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata24, 92);
-        SkPath path24;
-        path24.readFromMemory(pathdata24, 92);
+        
+        auto path24 = SkPath::ReadFromMemory(pathdata24, 92);
         void *paintdata_path24 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path24, 28);
         SkReadBuffer paintBuffer_path24(paintdata_path24, 28);
@@ -25268,7 +25268,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path24, paintPath24);
+        canvas->drawPath(path24.value(), paintPath24);
         free(pathdata24);
         free(paintdata_path24);
     }
@@ -26260,8 +26260,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata25 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata25, 92);
-        SkPath path25;
-        path25.readFromMemory(pathdata25, 92);
+        
+        auto path25 = SkPath::ReadFromMemory(pathdata25, 92);
         void *paintdata_path25 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path25, 28);
         SkReadBuffer paintBuffer_path25(paintdata_path25, 28);
@@ -26638,7 +26638,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path25, paintPath25);
+        canvas->drawPath(path25.value(), paintPath25);
         free(pathdata25);
         free(paintdata_path25);
     }
@@ -26848,8 +26848,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata26 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata26, 92);
-        SkPath path26;
-        path26.readFromMemory(pathdata26, 92);
+        
+        auto path26 = SkPath::ReadFromMemory(pathdata26, 92);
         void *paintdata_path26 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path26, 28);
         SkReadBuffer paintBuffer_path26(paintdata_path26, 28);
@@ -27129,7 +27129,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path26, paintPath26);
+        canvas->drawPath(path26.value(), paintPath26);
         free(pathdata26);
         free(paintdata_path26);
     }
@@ -27339,8 +27339,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata27 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata27, 92);
-        SkPath path27;
-        path27.readFromMemory(pathdata27, 92);
+        
+        auto path27 = SkPath::ReadFromMemory(pathdata27, 92);
         void *paintdata_path27 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path27, 28);
         SkReadBuffer paintBuffer_path27(paintdata_path27, 28);
@@ -27620,7 +27620,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path27, paintPath27);
+        canvas->drawPath(path27.value(), paintPath27);
         free(pathdata27);
         free(paintdata_path27);
     }
@@ -27830,8 +27830,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata28 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata28, 92);
-        SkPath path28;
-        path28.readFromMemory(pathdata28, 92);
+        
+        auto path28 = SkPath::ReadFromMemory(pathdata28, 92);
         void *paintdata_path28 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path28, 28);
         SkReadBuffer paintBuffer_path28(paintdata_path28, 28);
@@ -28111,7 +28111,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path28, paintPath28);
+        canvas->drawPath(path28.value(), paintPath28);
         free(pathdata28);
         free(paintdata_path28);
     }
@@ -28321,8 +28321,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata29 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata29, 92);
-        SkPath path29;
-        path29.readFromMemory(pathdata29, 92);
+        
+        auto path29 = SkPath::ReadFromMemory(pathdata29, 92);
         void *paintdata_path29 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path29, 28);
         SkReadBuffer paintBuffer_path29(paintdata_path29, 28);
@@ -28602,7 +28602,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path29, paintPath29);
+        canvas->drawPath(path29.value(), paintPath29);
         free(pathdata29);
         free(paintdata_path29);
     }
@@ -28812,8 +28812,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata30 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata30, 92);
-        SkPath path30;
-        path30.readFromMemory(pathdata30, 92);
+        
+        auto path30 = SkPath::ReadFromMemory(pathdata30, 92);
         void *paintdata_path30 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path30, 28);
         SkReadBuffer paintBuffer_path30(paintdata_path30, 28);
@@ -29093,7 +29093,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path30, paintPath30);
+        canvas->drawPath(path30.value(), paintPath30);
         free(pathdata30);
         free(paintdata_path30);
     }
@@ -29303,8 +29303,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata31 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata31, 92);
-        SkPath path31;
-        path31.readFromMemory(pathdata31, 92);
+        
+        auto path31 = SkPath::ReadFromMemory(pathdata31, 92);
         void *paintdata_path31 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path31, 28);
         SkReadBuffer paintBuffer_path31(paintdata_path31, 28);
@@ -29584,7 +29584,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path31, paintPath31);
+        canvas->drawPath(path31.value(), paintPath31);
         free(pathdata31);
         free(paintdata_path31);
     }
@@ -29794,8 +29794,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata32 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata32, 92);
-        SkPath path32;
-        path32.readFromMemory(pathdata32, 92);
+        
+        auto path32 = SkPath::ReadFromMemory(pathdata32, 92);
         void *paintdata_path32 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path32, 28);
         SkReadBuffer paintBuffer_path32(paintdata_path32, 28);
@@ -30075,7 +30075,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path32, paintPath32);
+        canvas->drawPath(path32.value(), paintPath32);
         free(pathdata32);
         free(paintdata_path32);
     }
@@ -30285,8 +30285,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata33 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata33, 92);
-        SkPath path33;
-        path33.readFromMemory(pathdata33, 92);
+        
+        auto path33 = SkPath::ReadFromMemory(pathdata33, 92);
         void *paintdata_path33 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path33, 28);
         SkReadBuffer paintBuffer_path33(paintdata_path33, 28);
@@ -30566,7 +30566,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path33, paintPath33);
+        canvas->drawPath(path33.value(), paintPath33);
         free(pathdata33);
         free(paintdata_path33);
     }
@@ -31013,8 +31013,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata34 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata34, 92);
-        SkPath path34;
-        path34.readFromMemory(pathdata34, 92);
+        
+        auto path34 = SkPath::ReadFromMemory(pathdata34, 92);
         void *paintdata_path34 = malloc(28);
         hexToRawData("00000000000080400000803f0000803f0000803f0000803f01030000", paintdata_path34, 28);
         SkReadBuffer paintBuffer_path34(paintdata_path34, 28);
@@ -31465,7 +31465,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path34, paintPath34);
+        canvas->drawPath(path34.value(), paintPath34);
         free(pathdata34);
         free(paintdata_path34);
     }
@@ -31919,8 +31919,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata35 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata35, 92);
-        SkPath path35;
-        path35.readFromMemory(pathdata35, 92);
+        
+        auto path35 = SkPath::ReadFromMemory(pathdata35, 92);
         void *paintdata_path35 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path35, 28);
         SkReadBuffer paintBuffer_path35(paintdata_path35, 28);
@@ -32458,7 +32458,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path35, paintPath35);
+        canvas->drawPath(path35.value(), paintPath35);
         free(pathdata35);
         free(paintdata_path35);
     }
@@ -32668,8 +32668,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata36 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata36, 92);
-        SkPath path36;
-        path36.readFromMemory(pathdata36, 92);
+        
+        auto path36 = SkPath::ReadFromMemory(pathdata36, 92);
         void *paintdata_path36 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path36, 28);
         SkReadBuffer paintBuffer_path36(paintdata_path36, 28);
@@ -32949,7 +32949,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path36, paintPath36);
+        canvas->drawPath(path36.value(), paintPath36);
         free(pathdata36);
         free(paintdata_path36);
     }
@@ -33159,8 +33159,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata37 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata37, 92);
-        SkPath path37;
-        path37.readFromMemory(pathdata37, 92);
+        
+        auto path37 = SkPath::ReadFromMemory(pathdata37, 92);
         void *paintdata_path37 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path37, 28);
         SkReadBuffer paintBuffer_path37(paintdata_path37, 28);
@@ -33440,7 +33440,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path37, paintPath37);
+        canvas->drawPath(path37.value(), paintPath37);
         free(pathdata37);
         free(paintdata_path37);
     }
@@ -33650,8 +33650,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata38 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata38, 92);
-        SkPath path38;
-        path38.readFromMemory(pathdata38, 92);
+        
+        auto path38 = SkPath::ReadFromMemory(pathdata38, 92);
         void *paintdata_path38 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path38, 28);
         SkReadBuffer paintBuffer_path38(paintdata_path38, 28);
@@ -33931,7 +33931,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path38, paintPath38);
+        canvas->drawPath(path38.value(), paintPath38);
         free(pathdata38);
         free(paintdata_path38);
     }
@@ -35049,8 +35049,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata39 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata39, 92);
-        SkPath path39;
-        path39.readFromMemory(pathdata39, 92);
+        
+        auto path39 = SkPath::ReadFromMemory(pathdata39, 92);
         void *paintdata_path39 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path39, 28);
         SkReadBuffer paintBuffer_path39(paintdata_path39, 28);
@@ -35588,7 +35588,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path39, paintPath39);
+        canvas->drawPath(path39.value(), paintPath39);
         free(pathdata39);
         free(paintdata_path39);
     }
@@ -35798,8 +35798,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata40 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata40, 92);
-        SkPath path40;
-        path40.readFromMemory(pathdata40, 92);
+        
+        auto path40 = SkPath::ReadFromMemory(pathdata40, 92);
         void *paintdata_path40 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path40, 28);
         SkReadBuffer paintBuffer_path40(paintdata_path40, 28);
@@ -36079,7 +36079,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path40, paintPath40);
+        canvas->drawPath(path40.value(), paintPath40);
         free(pathdata40);
         free(paintdata_path40);
     }
@@ -36289,8 +36289,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata41 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata41, 92);
-        SkPath path41;
-        path41.readFromMemory(pathdata41, 92);
+        
+        auto path41 = SkPath::ReadFromMemory(pathdata41, 92);
         void *paintdata_path41 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path41, 28);
         SkReadBuffer paintBuffer_path41(paintdata_path41, 28);
@@ -36570,7 +36570,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path41, paintPath41);
+        canvas->drawPath(path41.value(), paintPath41);
         free(pathdata41);
         free(paintdata_path41);
     }
@@ -36780,8 +36780,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata42 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata42, 92);
-        SkPath path42;
-        path42.readFromMemory(pathdata42, 92);
+        
+        auto path42 = SkPath::ReadFromMemory(pathdata42, 92);
         void *paintdata_path42 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path42, 28);
         SkReadBuffer paintBuffer_path42(paintdata_path42, 28);
@@ -37061,7 +37061,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path42, paintPath42);
+        canvas->drawPath(path42.value(), paintPath42);
         free(pathdata42);
         free(paintdata_path42);
     }
@@ -37271,8 +37271,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata43 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata43, 92);
-        SkPath path43;
-        path43.readFromMemory(pathdata43, 92);
+        
+        auto path43 = SkPath::ReadFromMemory(pathdata43, 92);
         void *paintdata_path43 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path43, 28);
         SkReadBuffer paintBuffer_path43(paintdata_path43, 28);
@@ -37552,7 +37552,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path43, paintPath43);
+        canvas->drawPath(path43.value(), paintPath43);
         free(pathdata43);
         free(paintdata_path43);
     }
@@ -37762,8 +37762,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata44 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata44, 92);
-        SkPath path44;
-        path44.readFromMemory(pathdata44, 92);
+        
+        auto path44 = SkPath::ReadFromMemory(pathdata44, 92);
         void *paintdata_path44 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path44, 28);
         SkReadBuffer paintBuffer_path44(paintdata_path44, 28);
@@ -38043,7 +38043,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path44, paintPath44);
+        canvas->drawPath(path44.value(), paintPath44);
         free(pathdata44);
         free(paintdata_path44);
     }
@@ -38253,8 +38253,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata45 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata45, 92);
-        SkPath path45;
-        path45.readFromMemory(pathdata45, 92);
+        
+        auto path45 = SkPath::ReadFromMemory(pathdata45, 92);
         void *paintdata_path45 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path45, 28);
         SkReadBuffer paintBuffer_path45(paintdata_path45, 28);
@@ -38534,7 +38534,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path45, paintPath45);
+        canvas->drawPath(path45.value(), paintPath45);
         free(pathdata45);
         free(paintdata_path45);
     }
@@ -38744,8 +38744,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata46 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata46, 92);
-        SkPath path46;
-        path46.readFromMemory(pathdata46, 92);
+        
+        auto path46 = SkPath::ReadFromMemory(pathdata46, 92);
         void *paintdata_path46 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path46, 28);
         SkReadBuffer paintBuffer_path46(paintdata_path46, 28);
@@ -39025,7 +39025,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path46, paintPath46);
+        canvas->drawPath(path46.value(), paintPath46);
         free(pathdata46);
         free(paintdata_path46);
     }
@@ -39235,8 +39235,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata47 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata47, 92);
-        SkPath path47;
-        path47.readFromMemory(pathdata47, 92);
+        
+        auto path47 = SkPath::ReadFromMemory(pathdata47, 92);
         void *paintdata_path47 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path47, 28);
         SkReadBuffer paintBuffer_path47(paintdata_path47, 28);
@@ -39516,7 +39516,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path47, paintPath47);
+        canvas->drawPath(path47.value(), paintPath47);
         free(pathdata47);
         free(paintdata_path47);
     }
@@ -40046,8 +40046,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata48 = malloc(224);
         hexToRawData("0501000016000000040000000f0000005839fc408b6c37408b6cff408b6c37409cc400417b143e40ac1c00416ce743405839b8407b1400417110b740e05b01418941b44042600141355e8a401f850141237a874075870141d34d86404035004116d9fe3f93184440bdbef33fe4973740508d074014ae374019045e404f8d3740e04f65404f8d37400bd76b4030083c402b876e4082c04240d1229f406666c640b81ec94084eb41405a69cb40ccf936401058d1403c0a37405839fc40ec7c37401e04583f462f563fe4da0a3f5bbf543f00040103010301030104010103010500", pathdata48, 224);
-        SkPath path48;
-        path48.readFromMemory(pathdata48, 224);
+        
+        auto path48 = SkPath::ReadFromMemory(pathdata48, 224);
         void *paintdata_path48 = malloc(28);
         hexToRawData("00000000000080400000803f0000803f0000803f0000803f01030000", paintdata_path48, 28);
         SkReadBuffer paintBuffer_path48(paintdata_path48, 28);
@@ -40664,7 +40664,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path48, paintPath48);
+        canvas->drawPath(path48.value(), paintPath48);
         free(pathdata48);
         free(paintdata_path48);
     }
@@ -41118,8 +41118,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata49 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata49, 92);
-        SkPath path49;
-        path49.readFromMemory(pathdata49, 92);
+        
+        auto path49 = SkPath::ReadFromMemory(pathdata49, 92);
         void *paintdata_path49 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path49, 28);
         SkReadBuffer paintBuffer_path49(paintdata_path49, 28);
@@ -41657,7 +41657,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path49, paintPath49);
+        canvas->drawPath(path49.value(), paintPath49);
         free(pathdata49);
         free(paintdata_path49);
     }
@@ -41867,8 +41867,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata50 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata50, 92);
-        SkPath path50;
-        path50.readFromMemory(pathdata50, 92);
+        
+        auto path50 = SkPath::ReadFromMemory(pathdata50, 92);
         void *paintdata_path50 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path50, 28);
         SkReadBuffer paintBuffer_path50(paintdata_path50, 28);
@@ -42148,7 +42148,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path50, paintPath50);
+        canvas->drawPath(path50.value(), paintPath50);
         free(pathdata50);
         free(paintdata_path50);
     }
@@ -42358,8 +42358,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata51 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata51, 92);
-        SkPath path51;
-        path51.readFromMemory(pathdata51, 92);
+        
+        auto path51 = SkPath::ReadFromMemory(pathdata51, 92);
         void *paintdata_path51 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path51, 28);
         SkReadBuffer paintBuffer_path51(paintdata_path51, 28);
@@ -42639,7 +42639,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path51, paintPath51);
+        canvas->drawPath(path51.value(), paintPath51);
         free(pathdata51);
         free(paintdata_path51);
     }
@@ -42849,8 +42849,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata52 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata52, 92);
-        SkPath path52;
-        path52.readFromMemory(pathdata52, 92);
+        
+        auto path52 = SkPath::ReadFromMemory(pathdata52, 92);
         void *paintdata_path52 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path52, 28);
         SkReadBuffer paintBuffer_path52(paintdata_path52, 28);
@@ -43130,7 +43130,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path52, paintPath52);
+        canvas->drawPath(path52.value(), paintPath52);
         free(pathdata52);
         free(paintdata_path52);
     }
@@ -43340,8 +43340,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata53 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata53, 92);
-        SkPath path53;
-        path53.readFromMemory(pathdata53, 92);
+        
+        auto path53 = SkPath::ReadFromMemory(pathdata53, 92);
         void *paintdata_path53 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path53, 28);
         SkReadBuffer paintBuffer_path53(paintdata_path53, 28);
@@ -43621,7 +43621,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path53, paintPath53);
+        canvas->drawPath(path53.value(), paintPath53);
         free(pathdata53);
         free(paintdata_path53);
     }
@@ -45297,8 +45297,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata54 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata54, 92);
-        SkPath path54;
-        path54.readFromMemory(pathdata54, 92);
+        
+        auto path54 = SkPath::ReadFromMemory(pathdata54, 92);
         void *paintdata_path54 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path54, 28);
         SkReadBuffer paintBuffer_path54(paintdata_path54, 28);
@@ -45912,7 +45912,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path54, paintPath54);
+        canvas->drawPath(path54.value(), paintPath54);
         free(pathdata54);
         free(paintdata_path54);
     }
@@ -46813,8 +46813,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata55 = malloc(224);
         hexToRawData("0501000016000000040000000f0000005839fc408b6c37408b6cff408b6c37409cc400417b143e40ac1c00416ce743405839b8407b1400417110b740e05b01418941b44042600141355e8a401f850141237a874075870141d34d86404035004116d9fe3f93184440bdbef33fe4973740508d074014ae374019045e404f8d3740e04f65404f8d37400bd76b4030083c402b876e4082c04240d1229f406666c640b81ec94084eb41405a69cb40ccf936401058d1403c0a37405839fc40ec7c37401e04583f462f563fe4da0a3f5bbf543f00040103010301030104010103010500", pathdata55, 224);
-        SkPath path55;
-        path55.readFromMemory(pathdata55, 224);
+        
+        auto path55 = SkPath::ReadFromMemory(pathdata55, 224);
         void *paintdata_path55 = malloc(28);
         hexToRawData("00000000000080400000803f0000803f0000803f0000803f01030000", paintdata_path55, 28);
         SkReadBuffer paintBuffer_path55(paintdata_path55, 28);
@@ -47285,7 +47285,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path55, paintPath55);
+        canvas->drawPath(path55.value(), paintPath55);
         free(pathdata55);
         free(paintdata_path55);
     }
@@ -48220,8 +48220,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata56 = malloc(224);
         hexToRawData("0501000016000000040000000f0000005839fc408b6c37408b6cff408b6c37409cc400417b143e40ac1c00416ce743405839b8407b1400417110b740e05b01418941b44042600141355e8a401f850141237a874075870141d34d86404035004116d9fe3f93184440bdbef33fe4973740508d074014ae374019045e404f8d3740e04f65404f8d37400bd76b4030083c402b876e4082c04240d1229f406666c640b81ec94084eb41405a69cb40ccf936401058d1403c0a37405839fc40ec7c37401e04583f462f563fe4da0a3f5bbf543f00040103010301030104010103010500", pathdata56, 224);
-        SkPath path56;
-        path56.readFromMemory(pathdata56, 224);
+        
+        auto path56 = SkPath::ReadFromMemory(pathdata56, 224);
         void *paintdata_path56 = malloc(28);
         hexToRawData("00000000000080400000803f0000803f0000803f0000803f01030000", paintdata_path56, 28);
         SkReadBuffer paintBuffer_path56(paintdata_path56, 28);
@@ -48803,7 +48803,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path56, paintPath56);
+        canvas->drawPath(path56.value(), paintPath56);
         free(pathdata56);
         free(paintdata_path56);
     }
@@ -49226,8 +49226,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata57 = malloc(224);
         hexToRawData("0501000016000000040000000f0000005839fc408b6c37408b6cff408b6c37409cc400417b143e40ac1c00416ce743405839b8407b1400417110b740e05b01418941b44042600141355e8a401f850141237a874075870141d34d86404035004116d9fe3f93184440bdbef33fe4973740508d074014ae374019045e404f8d3740e04f65404f8d37400bd76b4030083c402b876e4082c04240d1229f406666c640b81ec94084eb41405a69cb40ccf936401058d1403c0a37405839fc40ec7c37401e04583f462f563fe4da0a3f5bbf543f00040103010301030104010103010500", pathdata57, 224);
-        SkPath path57;
-        path57.readFromMemory(pathdata57, 224);
+        
+        auto path57 = SkPath::ReadFromMemory(pathdata57, 224);
         void *paintdata_path57 = malloc(28);
         hexToRawData("00000000000080400000803f0000803f0000803f0000803f01030000", paintdata_path57, 28);
         SkReadBuffer paintBuffer_path57(paintdata_path57, 28);
@@ -49678,7 +49678,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path57, paintPath57);
+        canvas->drawPath(path57.value(), paintPath57);
         free(pathdata57);
         free(paintdata_path57);
     }
@@ -50609,8 +50609,8 @@ std::cout << "init op type: RestoreOp\n";
 //DrawPathOp
         void *pathdata58 = malloc(92);
         hexToRawData("05010000080000000000000009000000f4fd6c40310854400000a04083c0be407b14ca4031085440713dee4031085440e04fb1407493e44021b08e407493e440bd74234030085440f4fd6c4030085440000101010101010105000000", pathdata58, 92);
-        SkPath path58;
-        path58.readFromMemory(pathdata58, 92);
+        
+        auto path58 = SkPath::ReadFromMemory(pathdata58, 92);
         void *paintdata_path58 = malloc(28);
         hexToRawData("0000000000008040fefd7d3ffffe7e3fbbbaba3e0000803f01030000", paintdata_path58, 28);
         SkReadBuffer paintBuffer_path58(paintdata_path58, 28);
@@ -51361,7 +51361,7 @@ std::cout << "render op type: SaveOp\n";
 canvas->save();
 std::cout << "render op type: DrawPathOp\n";
 {
-        canvas->drawPath(path58, paintPath58);
+        canvas->drawPath(path58.value(), paintPath58);
         free(pathdata58);
         free(paintdata_path58);
     }

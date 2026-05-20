@@ -97,9 +97,8 @@ std::cout << "init op type: RestoreOp\n";
 //ClipPathOp
         void *clipPathdata0 = malloc(200);
         hexToRawData("0500000016000000000000000800000042602d4173680d428c6c5741078107426f128741508de7416f128741285ccf418c6c5741e6d0f64146b6b33f9999ed41c1cae13fde24a2419eef0740ae47214124db6941aaf11a410000904155e3253f6f12ab41aaf11a4107810742ae472141aaf10842de24a2414e620a429999ed41ba49b441e6d0f64191ed9841285ccf4191ed9841508de741ba49b44107810742e04fc94173680d422731a84107810742b29d6f410781074242602d4173680d420004040404040404", clipPathdata0, 200);
-        SkPath clip_path0;
-        clip_path0.readFromMemory(clipPathdata0, 200);
-        if (!clip_path0.isValid())
+        auto clip_path0 = SkPath::ReadFromMemory(clipPathdata0, 200);
+        if (!clip_path0->isValid())
             std::cout << "invalid clip_path 0";
         
 std::cout << "init op type: RestoreOp\n";
@@ -125,9 +124,8 @@ std::cout << "init op type: RestoreOp\n";
 //ClipPathOp
         void *clipPathdata1 = malloc(176);
         hexToRawData("050000001300000000000000080000000000dc41ec513c413e0acd41eb511041295ca24167669e40c2f56a4185eba140b81ef14015aea3400000000015ae234100000000cdcc974100000000e2fa1042cdccad419a1910420000dc412a5c4e429a1905429a19104200005c42e2fa104200005c42cdcc974100005c4215ae234129dc3d4215aea3409042214285eba140ebd10a4267669e40c2f5ea41eb5110410000dc41ec513c410004040404040405", clipPathdata1, 176);
-        SkPath clip_path1;
-        clip_path1.readFromMemory(clipPathdata1, 176);
-        if (!clip_path1.isValid())
+        auto clip_path1 = SkPath::ReadFromMemory(clipPathdata1, 176);
+        if (!clip_path1->isValid())
             std::cout << "invalid clip_path 1";
         
 std::cout << "init op type: RestoreOp\n";
@@ -153,9 +151,8 @@ std::cout << "init op type: RestoreOp\n";
 //ClipPathOp
         void *clipPathdata2 = malloc(200);
         hexToRawData("05000000160000000000000008000000e17a104114aeeb411f8533410bd7e141b91e6141c3f5c041b91e6141ccccac411f85334115aecd4190c2953f0000c641f628bc3fb91e87415d8fe23f6666064148e14241b81e014100007041713d0a3f5d8f8e41b81e01410bd7e14166660641713de441b91e8741d7a3e6410000c641703d964115aecd4146e17e41ccccac4146e17e41c3f5c041703d96410bd7e14190c2a74114aeeb41f6288c410bd7e14115ae47410bd7e141e17a104114aeeb410004040404040404", clipPathdata2, 200);
-        SkPath clip_path2;
-        clip_path2.readFromMemory(clipPathdata2, 200);
-        if (!clip_path2.isValid())
+        auto clip_path2 = SkPath::ReadFromMemory(clipPathdata2, 200);
+        if (!clip_path2->isValid())
             std::cout << "invalid clip_path 2";
         
 std::cout << "init op type: RestoreOp\n";
@@ -249,7 +246,7 @@ std::cout << "render op type: ClipRectOp\n";
         }
 std::cout << "render op type: ClipPathOp\n";
 {
-            canvas->clipPath(clip_path0, SkClipOp::kIntersect, true);
+            canvas->clipPath(clip_path0.value(), SkClipOp::kIntersect, true);
             free(clipPathdata0);
         
         }
@@ -277,7 +274,7 @@ std::cout << "render op type: ClipRectOp\n";
         }
 std::cout << "render op type: ClipPathOp\n";
 {
-            canvas->clipPath(clip_path1, SkClipOp::kIntersect, true);
+            canvas->clipPath(clip_path1.value(), SkClipOp::kIntersect, true);
             free(clipPathdata1);
         
         }
@@ -305,7 +302,7 @@ std::cout << "render op type: ClipRectOp\n";
         }
 std::cout << "render op type: ClipPathOp\n";
 {
-            canvas->clipPath(clip_path2, SkClipOp::kIntersect, true);
+            canvas->clipPath(clip_path2.value(), SkClipOp::kIntersect, true);
             free(clipPathdata2);
         
         }
