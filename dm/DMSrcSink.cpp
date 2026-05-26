@@ -49,6 +49,7 @@
 #include "src/core/SkRecorder.h"
 #include "src/core/SkSwizzlePriv.h"
 #include "src/core/SkTaskGroup.h"
+#include "src/core/SkTraceEvent.h"
 #include "src/gpu/ganesh/GrDirectContextPriv.h"
 #include "src/gpu/ganesh/GrGpu.h"
 #include "src/gpu/ganesh/image/GrImageUtils.h"
@@ -1546,6 +1547,7 @@ GPUSink::GPUSink(const SkCommandLineConfigGpu* config,
 }
 
 Result GPUSink::draw(const Src& src, SkBitmap* dst, SkWStream* dstStream, SkString* log) const {
+    TRACE_EVENT0("skia.gpu", TRACE_FUNC);
     return this->onDraw(src, dst, dstStream, log, fBaseContextOptions);
 }
 
@@ -2160,6 +2162,8 @@ Result GraphiteSink::draw(const Src& src,
                           SkBitmap* dst,
                           SkWStream* dstStream,
                           SkString* log) const {
+    TRACE_EVENT0("skia.gpu", TRACE_FUNC);
+
     skiatest::graphite::TestOptions options = fOptions;
     // If we've copied context options from an external source we can't trust that the
     // priv pointer is still in scope, so assume it should be NULL and set our own up.

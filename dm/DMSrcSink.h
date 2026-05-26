@@ -125,6 +125,8 @@ struct Sink {
     // Override the color space of this Sink, after creation
     virtual void setColorSpace(sk_sp<SkColorSpace>) {}
 
+    virtual void setIterations(int iterations) {}
+
     // Force Tasks using this Sink to run on the main thread?
     virtual bool serial() const { return false; }
 
@@ -394,6 +396,7 @@ public:
     }
     const GrContextOptions& baseContextOptions() const { return fBaseContextOptions; }
     void setColorSpace(sk_sp<SkColorSpace> colorSpace) override { fColorSpace = colorSpace; }
+    void setIterations(int iterations) override { fIterations = iterations; }
     SkColorInfo colorInfo() const override {
         return SkColorInfo(fColorType, fAlphaType, fColorSpace);
     }
@@ -410,6 +413,7 @@ private:
     uint32_t                                          fSurfaceFlags;
     SkColorType                                       fColorType;
     SkAlphaType                                       fAlphaType;
+    int                                               fIterations;
     sk_sp<SkColorSpace>                               fColorSpace;
     GrContextOptions                                  fBaseContextOptions;
     sk_gpu_test::MemoryCache                          fMemoryCache;
@@ -579,6 +583,7 @@ public:
     const char* fileExtension() const override { return "png"; }
     SinkFlags flags() const override { return SinkFlags{SinkFlags::kGPU, SinkFlags::kDirect}; }
     void setColorSpace(sk_sp<SkColorSpace> colorSpace) override { fColorSpace = colorSpace; }
+    void setIterations(int iterations) override { fIterations = iterations; }
     SkColorInfo colorInfo() const override {
         return SkColorInfo(fColorType, fAlphaType, fColorSpace);
     }
@@ -590,6 +595,7 @@ protected:
     skgpu::ContextType fContextType;
     SkColorType fColorType;
     SkAlphaType fAlphaType;
+    int fIterations;
     sk_sp<SkColorSpace> fColorSpace;
 };
 
