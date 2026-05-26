@@ -1567,6 +1567,11 @@ GPUSink::GPUSink(const SkCommandLineConfigGpu* config,
 }
 
 Result GPUSink::draw(const Src& src, SkBitmap* dst, SkWStream* dstStream, SkString* log) const {
+    SkBitmap cold;
+    SkString coldLog;
+    for( int i = 1; i < fIterations; ++i ) {
+        this->onDraw(src, &cold, dstStream, &coldLog, fBaseContextOptions);
+    }
     return this->onDraw(src, dst, dstStream, log, fBaseContextOptions);
 }
 
@@ -2215,6 +2220,19 @@ GraphiteSink::GraphiteSink(const SkCommandLineConfigGraphite* config,
         , fAlphaType(config->getAlphaType()) {}
 
 Result GraphiteSink::draw(const Src& src,
+                          SkBitmap* dst,
+                          SkWStream* dstStream,
+                          SkString* log) const {
+    SkBitmap cold;
+    SkString coldLog;
+    for( int i = 1; i < fIterations; ++i ) {
+        this->onDraw(src, &cold, dstStream, &coldLog);
+    }
+
+    return this->onDraw(src, dst, dstStream, log);
+}
+
+Result GraphiteSink::onDraw(const Src& src,
                           SkBitmap* dst,
                           SkWStream* dstStream,
                           SkString* log) const {

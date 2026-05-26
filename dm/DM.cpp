@@ -111,6 +111,7 @@ static DEFINE_string(uninterestingHashesFile, "",
 
 static DEFINE_int(shards, 1, "We're splitting source data into this many shards.");
 static DEFINE_int(shard,  0, "Which shard do I run?");
+static DEFINE_int_2(iterations, c, 1, "Run each case in this many iterations.");
 
 static DEFINE_string(mskps, "", "Directory to read mskps from, or a single mskp file.");
 static DEFINE_bool(forceRasterPipeline, false, "sets gSkForceRasterPipelineBlitter");
@@ -1125,6 +1126,7 @@ static bool gather_sinks(
 
         // The command line config already parsed out the via-style color space. Apply it here.
         sink->setColorSpace(config.refColorSpace());
+        sink->setIterations(FLAGS_iterations);
 
         const TArray<SkString>& parts = config.getViaParts();
         for (int j = parts.size(); j-- > 0;) {

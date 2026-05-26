@@ -723,6 +723,7 @@ SkCommandLineConfigGraphite* parse_command_line_config_graphite(const SkString& 
     bool        testPersistentStorage  = false;
     bool        testPrecompileGraphite = false;
     bool        testPipelineTracking   = false;
+    int         testIterations         = 1;
 
     bool parseSucceeded = false;
     ExtendedOptions extendedOptions(options, &parseSucceeded);
