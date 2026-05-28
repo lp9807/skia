@@ -89,13 +89,16 @@ bool DrawPass::prepareResources(ResourceProvider* resourceProvider,
     // GraphicsPipelineHandle (plausible since we either have the pipeline with its label, or we
     // likely calculated the label as part of triggering a cache miss).
     {
-        TRACE_EVENT0_ALWAYS("skia.shaders", "GraphitePipelineUse");
-        TRACE_EVENT0_ALWAYS("skia.shaders", TRACE_STR_COPY(renderPassDesc.toString().c_str()));
+        TRACE_EVENT1_ALWAYS(
+            "skia.shaders", 
+            TRACE_STR_STATIC("GraphitePipelineUse"), 
+            "desc", TRACE_STR_COPY(renderPassDesc.toString().c_str()));
         for (int i = 0 ; i < fFullPipelines.size(); ++i) {
-            TRACE_EVENT_INSTANT1_ALWAYS(
+            TRACE_EVENT_INSTANT2_ALWAYS(
                     "skia.shaders",
-                    TRACE_STR_COPY(fFullPipelines[i]->getLabel()),
+                    TRACE_STR_STATIC("PipN"),
                     TRACE_EVENT_SCOPE_THREAD,
+                    "label", TRACE_STR_COPY(fFullPipelines[i]->getLabel()),
                     "area", sk_float_saturate2int(fPipelineDrawAreas[i]));
         }
     }
