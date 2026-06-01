@@ -1567,11 +1567,6 @@ GPUSink::GPUSink(const SkCommandLineConfigGpu* config,
 }
 
 Result GPUSink::draw(const Src& src, SkBitmap* dst, SkWStream* dstStream, SkString* log) const {
-    SkBitmap cold;
-    SkString coldLog;
-    for( int i = 1; i < fIterations; ++i ) {
-        this->onDraw(src, &cold, dstStream, &coldLog, fBaseContextOptions);
-    }
     return this->onDraw(src, dst, dstStream, log, fBaseContextOptions);
 }
 
@@ -1654,16 +1649,21 @@ Result GPUSink::onDraw(const Src& src, SkBitmap* dst, SkWStream*, SkString* log,
     if (wrapCanvas != nullptr) {
         canvas = wrapCanvas(canvas);
     }
-
-    Result result = src.draw(canvas, /*GraphiteTestContext=*/nullptr);
-    if (!result.isOk()) {
-        return result;
-    }
-    direct->flushAndSubmit(surface.get(), GrSyncCpu::kNo);
-    if (FLAGS_gpuStats) {
-        direct->priv().dumpCacheStats(log);
-        direct->priv().dumpGpuStats(log);
-        direct->priv().dumpContextStats(log);
+    
+    for( int i = 0; i < fIterations; ++i )
+    {
+        //TODO_luop: clear canvas.
+        Result result = src.draw(canvas, /*GraphiteTestContext=*/nullptr);
+        if (!result.isOk()) {
+            return result;
+        }
+        // Record execution time in tace data by in sync with cpu.
+        direct->flushAndSubmit(surface.get(), GrSyncCpu::kYes);
+        if (FLAGS_gpuStats) {
+            direct->priv().dumpCacheStats(log);
+            direct->priv().dumpGpuStats(log);
+            direct->priv().dumpContextStats(log);
+        }
     }
 
     this->readBack(surface.get(), dst);
@@ -2223,12 +2223,6 @@ Result GraphiteSink::draw(const Src& src,
                           SkBitmap* dst,
                           SkWStream* dstStream,
                           SkString* log) const {
-    SkBitmap cold;
-    SkString coldLog;
-    for( int i = 1; i < fIterations; ++i ) {
-        this->onDraw(src, &cold, dstStream, &coldLog);
-    }
-
     return this->onDraw(src, dst, dstStream, log);
 }
 
@@ -2269,38 +2263,45 @@ Result GraphiteSink::onDraw(const Src& src,
         return Result::Fatal("Could not create a recorder.");
     }
 
+    sk_sp<SkSurface> surface = this->makeSurface(recorder.get(), src);
+    if (!surface) {
+        return Result::Fatal("Could not create a surface.");
+    }
+    
+    for( int i = 0; i < fIterations; ++i )
     {
-        sk_sp<SkSurface> surface = this->makeSurface(recorder.get(), src);
-        if (!surface) {
-            return Result::Fatal("Could not create a surface.");
-        }
-        dst->allocPixels(surface->imageInfo());
+        // TODO_luop: cleanup canvas before each iteration.
         Result result = src.draw(surface->getCanvas(), ctxInfo.fTestContext);
         if (!result.isOk()) {
             return result;
         }
-
-        SkPixmap pm;
-        if (!dst->peekPixels(&pm) ||
-            !surface->readPixels(pm, 0, 0)) {
-            return Result::Fatal("Could not readback from surface.");
+        
+        // Only readback for once.
+        if( (i+1) == fIterations )
+        {
+            dst->allocPixels(surface->imageInfo());
+            SkPixmap pm;
+            if (!dst->peekPixels(&pm) ||
+                !surface->readPixels(pm, 0, 0)) {
+                return Result::Fatal("Could not readback from surface.");
+            }
         }
-    }
-
-    std::unique_ptr<skgpu::graphite::Recording> recording = recorder->snap();
-    if (!recording) {
-        return Result::Fatal("Could not create a recording.");
-    }
-
-    skgpu::graphite::InsertRecordingInfo info;
-    info.fRecording = recording.get();
-    if (!context->insertRecording(info)) {
-        return Result::Fatal("Context::insertRecording failed.");
-    }
-    ctxInfo.fTestContext->syncedSubmit(context);
-
-    if (options.fContextOptions.fPersistentPipelineStorage) {
-        context->syncPipelineData();
+        
+        std::unique_ptr<skgpu::graphite::Recording> recording = recorder->snap();
+        if (!recording) {
+            return Result::Fatal("Could not create a recording.");
+        }
+        
+        skgpu::graphite::InsertRecordingInfo info;
+        info.fRecording = recording.get();
+        if (!context->insertRecording(info)) {
+            return Result::Fatal("Context::insertRecording failed.");
+        }
+        ctxInfo.fTestContext->syncedSubmit(context);
+        
+        if (options.fContextOptions.fPersistentPipelineStorage) {
+            context->syncPipelineData();
+        }
     }
 
     return Result::Ok();
