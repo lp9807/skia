@@ -148,10 +148,10 @@ static const struct {
     { "grdawn_gles",              "graphite", "api=dawn_gles" },
 #if defined(SK_ENABLE_PRECOMPILE)
     { "grdawn_mtltestprecompile", "graphite", "api=dawn_mtl,testPrecompileGraphite=true" },
-    { "grdawn_vktestprecompile",  "graphite", "api=dawn_vk, testPrecompileGraphite=true" },
+    { "grdawn_vktestprecompile",  "graphite", "api=dawn_vk,testPrecompileGraphite=true" },
 #endif
     { "grdawn_mtltesttracking", "graphite", "api=dawn_mtl,testPipelineTracking=true" },
-    { "grdawn_vktesttracking",  "graphite", "api=dawn_vk, testPipelineTracking=true" },
+    { "grdawn_vktesttracking",  "graphite", "api=dawn_vk,testPipelineTracking=true" },
 #endif
 #ifdef SK_METAL
     { "grmtl",                    "graphite", "api=metal" },
