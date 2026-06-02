@@ -756,6 +756,8 @@ GrOpsRenderPass* GrGpu::getOpsRenderPass(
 }
 
 bool GrGpu::submitToGpu(const GrSubmitInfo& info) {
+    TRACE_EVENT0("skia.gpu", TRACE_FUNC);
+
     this->stats()->incNumSubmitToGpus();
 
     if (auto manager = this->stagingBufferManager()) {

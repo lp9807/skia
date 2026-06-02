@@ -609,7 +609,6 @@ public:
 
 protected:
     sk_sp<SkSurface> makeSurface(skgpu::graphite::Recorder*, const Src&) const;
-    Result onDraw(const Src&, SkBitmap*, SkWStream*, SkString*) const;
 
     skiatest::graphite::TestOptions fOptions;
     skgpu::ContextType fContextType;
