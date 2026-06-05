@@ -1486,6 +1486,15 @@ int main(int argc, char** argv) {
             bench->delayedSetup();
         }
         for (int i = 0; i < configs.size(); ++i) {
+            if( FLAGS_dryRun )
+            {
+                if( b->isSuitableFor(configs[i].backend) )
+                {
+                    SkDebugf("%s\n", bench->getUniqueName());
+                }
+                continue;
+            }
+
             Target* target = is_enabled(b, configs[i]);
             if (!target) {
                 continue;
@@ -1495,13 +1504,10 @@ int main(int argc, char** argv) {
             SkCanvas* canvas = target->getCanvas();
             const char* config = target->config.name.c_str();
 
-            if (FLAGS_pre_log || FLAGS_dryRun) {
+            if (FLAGS_pre_log) {
                 SkDebugf("Running %s\t%s\n"
                          , bench->getUniqueName()
                          , config);
-                if (FLAGS_dryRun) {
-                    continue;
-                }
             }
 
             if (FLAGS_purgeBetweenBenches) {
