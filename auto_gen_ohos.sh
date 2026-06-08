@@ -10,10 +10,12 @@ GREEN='\033[0;32m'
 NOCOLOR='\033[0m' # Resets to default
 
 is_shared_build=true
-while getopts 'sh' opt; do
+output_path="out/ohos_debug"
+while getopts 'shc:' opt; do
     case "$opt" in
         s) echo "Build using static option for linking";is_shared_build=false;;
         h) echo "Usage: $(basename $0) [-s build using static link]"; exit 0;;
+        c) output_path=$OPTARG;;
         *) echo "Invalid option"; exit 1;;
     esac
 done
@@ -28,6 +30,11 @@ if [[ "$is_windows" == "true" ]]; then
     skia_path=$(pwd -W)
 else
     skia_path=$(pwd)
+fi
+
+if ! [ -d "$output_path" ]; then
+    echo "$output_path doesn't exist, create safely."
+    mkdir -p $output_path
 fi
 
 # Auto-generated paths, verify their correctness
@@ -63,7 +70,6 @@ fi
 third_party_dng_sdk_path=$skia_path/third_party/externals/dng_sdk
 third_party_zlib_path=$skia_path/third_party/externals/zlib
 third_party_microhttpd_path=$skia_path/third_party/externals/microhttpd/src/include
-third_party_dawn_path=$skia_path/third_party/externals/dawn/src/dawn
 third_party_partition_alloc=$skia_path/third_party/externals/partition_alloc/src/partition_alloc
 third_party_vulkan_path=$skia_path/third_party/externals/vulkan-headers/include/vulkan
 
@@ -100,15 +106,6 @@ if [ -d "$third_party_vulkan_path" ]; then
     cp modified_external_third_party/vulkan.h $third_party_vulkan_path/vulkan.h
 else
     echo "Cannot find $third_party_vulkan_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
-    exit 1
-fi
-
-if [ -d "$third_party_dawn_path" ]; then
-
-    cp modified_external_third_party/dawn.json $third_party_dawn_path/dawn.json
-    cp modified_external_third_party/dawn_wire.json $third_party_dawn_path/dawn_wire.json
-else
-    echo "Cannot $third_party_dawn_path, make sure you have successfully run \`python3 tools/git-sync-deps\`"
     exit 1
 fi
 
@@ -155,22 +152,20 @@ if [[ "$is_windows" == "true" ]]; then
     echo "When running ninja and have a bug related to <ar>, add modified_external_third_party/ar/ into your PATH variable (or if you want, copy llvm-ar.exe from $ar_path into the folder)."
 fi
 
-default_output_path="out/ohos_debug"
-
 if [[ $is_shared_build == "true" ]]; then
     extra_static=""
     extra_link="$llvm_path/lib/aarch64-linux-ohos/libc++_shared.so"
-    cp $llvm_path/lib/aarch64-linux-ohos/libc++_shared.so $default_output_path
+    cp $llvm_path/lib/aarch64-linux-ohos/libc++_shared.so $output_path
     echo "Build using dynamic linking (use -s for static if needed)"
     echo -en "${YELLOW}Running:${NOCOLOR} "
-    echo "Set LD_LIBRARY_PATH=$default_output_path when running the executable to find the libc++_shared.so library"
+    echo "Set LD_LIBRARY_PATH=$output_path when running the executable to find the libc++_shared.so library"
 else
     extra_static="-static"
     extra_link=""
 fi
 
 # gn gen
-bin/gn gen "$default_output_path" --args="
+bin/gn gen "$output_path" --args="
     is_debug=true
     is_official_build=false
     target_os=\"ohos\"
