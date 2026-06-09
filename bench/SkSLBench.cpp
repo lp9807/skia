@@ -624,10 +624,9 @@ void main()
 )")
 
 #if defined(SK_BUILD_FOR_UNIX)
-
 #include <malloc.h>
 static int64_t heap_bytes_used() {
-    return (int64_t)mallinfo().uordblks;
+    return (int64_t)mallinfo2().uordblks;
 }
 
 #elif defined(SK_BUILD_FOR_MAC) || defined(SK_BUILD_FOR_IOS)
