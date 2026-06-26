@@ -9,16 +9,41 @@ YELLOW='\033[0;33m'
 GREEN='\033[0;32m'
 NOCOLOR='\033[0m' # Resets to default
 
+# Auto-generated paths, verify their correctness
+ohos_sdk_path=""
+if ! [ -z $HOS_SDK ]; then
+    ohos_sdk_path=$HOS_SDK
+elif [ -d "$skia_path/ohos_sdk" ]; then
+    ohos_sdk_path=$skia_path/ohos_sdk
+fi
+
 is_shared_build=true
 output_path="out/ohos_debug"
-while getopts 'shc:' opt; do
+while getopts 'shn:c:' opt; do
     case "$opt" in
         s) echo "Build using static option for linking";is_shared_build=false;;
-        h) echo "Usage: $(basename $0) [-s build using static link]"; exit 0;;
+        h) {
+            cat << EOF
+Usage: $(basename $0) [-s][-n PATH][-c PATH]
+    -s: enable static linking
+    -n: specify ohos sdk path
+    -c: specify output path to generate.
+EOF
+        }
+		exit 0;;
+		n) ohos_sdk_path=$OPTARG;;
         c) output_path=$OPTARG;;
         *) echo "Invalid option"; exit 1;;
     esac
 done
+
+if [[ -z $ohos_sdk_path ]]; then
+    echo 'No HOS SDK found! You have 3 options:'
+    echo '1. Setup shell variable $HOS_SDK'
+    echo '2. Put the SDK in ./ohos_sdk'
+    echo '3. Specify path to SDK by -n'
+    exit 1
+fi
 
 if [[ "$OS" == "Windows_NT" ]]; then
     is_windows=true
@@ -35,24 +60,6 @@ fi
 if ! [ -d "$output_path" ]; then
     echo "$output_path doesn't exist, create safely."
     mkdir -p $output_path
-fi
-
-# Auto-generated paths, verify their correctness
-if ! [ -z $HOS_SDK ]; then
-    ohos_sdk_path=$HOS_SDK
-elif ! [-z $HOS_NDK ]; then
-    ohos_sdk_path=$HOS_NDK
-elif [ -d "$skia_path/ohos_sdk" ]; then
-    ohos_sdk_path=$skia_path/ohos_sdk
-elif [ -d "$skia_path/ohos_ndk" ]; then
-    ohos_sdk_path=$skia_path/ohos_ndk
-else
-    echo 'No HOS SDK found! You have 4 options:'
-    echo '1. Setup shell variable $HOS_SDK'
-    echo '2. Setup shell variable $HOS_NDK'
-    echo '3. Put the SDK in ./ohos_sdk'
-    echo '4. Put the NDK in ./ohos_ndk'
-    exit 1
 fi
 
 echo -en "${YELLOW}Using${NOCOLOR} SDK path = "
@@ -131,6 +138,8 @@ fi
 
 if ! [ -z $HOS_CC ]; then
     cc_path=$HOS_CC
+elif [[ "$is_windows" == "true" ]]; then
+	cc_path=$llvm_path/bin/clang.exe
 else
     cc_path=$llvm_path/bin/clang
 fi
@@ -139,6 +148,8 @@ echo "$cc_path"
 
 if ! [ -z $HOS_CXX ]; then
     cxx_path=$HOS_CXX
+elif [[ "$is_windows" == "true" ]]; then
+	cxx_path=$llvm_path/bin/clang++.exe
 else  
     cxx_path=$llvm_path/bin/clang++
 fi
