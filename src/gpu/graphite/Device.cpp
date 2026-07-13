@@ -1562,6 +1562,11 @@ void Device::drawGeometry(const Transform& localToDevice,
                                                       style,
                                                       clip.transformedShapeBounds(),
                                                       /*requireMSAA=*/false);
+
+    TRACE_EVENT1(
+        "skia.gpu", TRACE_FUNC, 
+        "draw step", TRACE_STR_COPY(renderer ? renderer->name() : "PathAtlas") );
+
     if (!renderer && !pathAtlas) {
         SKGPU_LOG_W("Skipping draw with no supported renderer or PathAtlas.");
         return;
@@ -1843,6 +1848,11 @@ void Device::drawClipShape(const Transform& localToDevice,
                                                       DefaultFillStyle(),
                                                       clip.transformedShapeBounds(),
                                                       /*requireMSAA=*/true);
+
+    TRACE_EVENT1(
+        "skia.gpu", TRACE_FUNC, 
+        "draw step", TRACE_STR_COPY(renderer ? renderer->name() : "PathAtlas"));
+    
     if (!renderer) {
         SKGPU_LOG_W("Skipping clip with no supported path renderer.");
         return;
