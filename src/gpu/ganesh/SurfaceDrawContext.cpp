@@ -1723,6 +1723,9 @@ bool SurfaceDrawContext::drawSimpleShape(const GrClip* clip,
                                          GrAA aa,
                                          const SkMatrix& viewMatrix,
                                          const GrStyledShape& shape) {
+
+    GR_CREATE_TRACE_MARKER_CONTEXT("SurfaceDrawContext", "drawSimpleShape", fContext);
+
     if (!shape.style().hasPathEffect()) {
         GrAAType aaType = this->chooseAAType(aa);
         SkPoint linePts[2];
@@ -1789,7 +1792,7 @@ void SurfaceDrawContext::drawShapeUsingPathRenderer(const GrClip* clip,
                                                     bool attemptDrawSimple) {
     ASSERT_SINGLE_OWNER
     RETURN_IF_ABANDONED
-    GR_CREATE_TRACE_MARKER_CONTEXT("SurfaceDrawContext", "internalDrawPath", fContext);
+    GR_CREATE_TRACE_MARKER_CONTEXT("SurfaceDrawContext", "drawInternalPath", fContext);
 
     if (!viewMatrix.isFinite() || !shape.bounds().isFinite()) {
         return;
