@@ -182,7 +182,9 @@ void DrawList::recordDraw(const Renderer* renderer,
 
     // TODO: Add validation that the renderer's expected shape type and stroke params match provided
 
-    TRACE_EVENT1("skia.gpu", TRACE_FUNC, "renderer", renderer->name());
+    TRACE_EVENT2("skia.gpu", TRACE_FUNC, 
+                 "renderer", TRACE_STR_COPY(renderer->name()),
+                 "current count", fDraws.count());
 
     const Draw& draw = fDraws.emplace_back(renderer,
                                            this->deduplicateTransform(localToDevice),

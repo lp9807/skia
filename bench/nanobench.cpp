@@ -398,6 +398,7 @@ struct GraphiteTarget : public Target {
 #endif // SK_GRAPHITE
 
 static double time(int loops, Benchmark* bench, Target* target) {
+    TRACE_EVENT1("skia", TRACE_FUNC, "loops", loops);
     SkCanvas* canvas = target->getCanvas();
     if (canvas) {
         canvas->clear(SK_ColorWHITE);
